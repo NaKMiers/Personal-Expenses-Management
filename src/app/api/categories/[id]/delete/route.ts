@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import '@/models/CategoryModel'
 
 // [DELETE]: /categories/:id/delete
-export async function DELETE(req: NextRequest, { params: { id } }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     // connect to database
     await connectDatabase()
@@ -22,7 +22,7 @@ export async function DELETE(req: NextRequest, { params: { id } }: { params: { i
     }
 
     // delete category
-    const deletedCategory = await CategoryModel.findByIdAndDelete(id).lean()
+    const deletedCategory = await CategoryModel.findByIdAndDelete(params.id).lean()
 
     // return response
     return NextResponse.json({ deletedCategory, message: 'Category deleted' }, { status: 200 })
