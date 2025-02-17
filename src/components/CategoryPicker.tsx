@@ -34,7 +34,7 @@ function CategoryPicker({ type, onChange, className = '' }: CategoryPickerProps)
     setGetting(true)
 
     try {
-      const { categories } = await getUserCategoriesApi()
+      const { categories } = await getUserCategoriesApi(type)
 
       console.log('categories:', categories)
 
@@ -47,7 +47,7 @@ function CategoryPicker({ type, onChange, className = '' }: CategoryPickerProps)
       // stop loading
       setGetting(false)
     }
-  }, [])
+  }, [type])
 
   // initially get user categories
   useEffect(() => {
@@ -106,7 +106,7 @@ function CategoryPicker({ type, onChange, className = '' }: CategoryPickerProps)
         <div className="loading h-9 rounded-md" />
       ) : (
         <button
-          className="px-21/2 flex h-9 w-full items-center justify-between gap-2 rounded-md border border-slate-200/30 bg-neutral-950 text-start text-sm font-semibold"
+          className="flex h-9 w-full items-center justify-between gap-2 rounded-md border border-slate-200/30 bg-neutral-950 px-21/2 text-start text-sm font-semibold"
           onClick={() => setOpen(!open)}
         >
           {selectedCategory ? (
@@ -177,7 +177,7 @@ function CategoryPicker({ type, onChange, className = '' }: CategoryPickerProps)
                     key={category._id}
                   >
                     <button
-                      className="trans-200 px-21/2 w-full rounded-md bg-neutral-950 py-1.5 text-start text-sm font-semibold hover:bg-slate-200/30"
+                      className="trans-200 w-full rounded-md bg-neutral-950 px-21/2 py-1.5 text-start text-sm font-semibold hover:bg-slate-200/30"
                       onClick={() => {
                         setOpen(false)
                         setSelectedCategory(category)
@@ -195,7 +195,7 @@ function CategoryPicker({ type, onChange, className = '' }: CategoryPickerProps)
                       onConfirm={() => handleDeleteCategory(category._id)}
                       disabled={deleting === category._id}
                       trigger={
-                        <button className="trans-200 px-21/2 flex-shrink-0 rounded-md bg-neutral-950 py-1.5 text-start text-sm font-semibold hover:bg-slate-200/30">
+                        <button className="trans-200 flex-shrink-0 rounded-md bg-neutral-950 px-21/2 py-1.5 text-start text-sm font-semibold hover:bg-slate-200/30">
                           {deleting === category._id ? (
                             <RiDonutChartFill
                               size={16}
@@ -210,7 +210,7 @@ function CategoryPicker({ type, onChange, className = '' }: CategoryPickerProps)
                   </div>
                 ))
               ) : (
-                <div className="p-21 flex flex-col items-center justify-center">
+                <div className="flex flex-col items-center justify-center p-21">
                   <p className="text-sm font-semibold text-slate-300">Category not found</p>
                   <p className="mt-1 text-xs text-slate-300/80">Create new category now!</p>
                 </div>

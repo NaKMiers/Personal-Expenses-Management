@@ -19,14 +19,6 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     // get id from params
     const { id } = await params
 
-    // get current user
-    const user = await currentUser()
-
-    // check if user is not found
-    if (!user) {
-      redirect('/sign-in')
-    }
-
     // only allow to delete category if no transactions are associated with it
     const transactionExists = await TransactionModel.exists({ category: id })
     if (transactionExists) {

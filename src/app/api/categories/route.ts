@@ -2,12 +2,12 @@ import { connectDatabase } from '@/config/database'
 import CategoryModel from '@/models/CategoryModel'
 import { currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic'
 
 // [GET]: /api/categories
-export async function GET() {
+export async function GET(req: NextRequest) {
   console.log('- Get User Categories -')
 
   try {
@@ -22,8 +22,12 @@ export async function GET() {
       redirect('/sign-in')
     }
 
+    // get type from search params
+    const { searchParams } = new URL(req.nextUrl)
+    const type = searchParams.get('type')
+
     // get user categories
-    const categories = await CategoryModel.find({ userId: user.id }).lean()
+    const categories = await CategoryModel.find({ userId: user.id, type }).lean()
 
     // return response
     return NextResponse.json({ categories, message: '' }, { status: 200 })

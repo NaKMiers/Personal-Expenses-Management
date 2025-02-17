@@ -24,8 +24,6 @@ export async function POST(req: NextRequest) {
     // get category data from request body
     const { name, icon, type } = await req.json()
 
-    console.log('category data:', { name, icon, type })
-
     // create category
     const category = await CategoryModel.create({
       name,

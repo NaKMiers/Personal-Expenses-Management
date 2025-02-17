@@ -1,10 +1,14 @@
 // Category
 
+import { TransactionType } from '@/lib/types'
 import { ICategory } from '@/models/CategoryModel'
 
 // [GET]: /categories
-export const getUserCategoriesApi = async (option: RequestInit = { next: { revalidate: 0 } }) => {
-  const res = await fetch(`/api/categories`, option)
+export const getUserCategoriesApi = async (
+  type: TransactionType,
+  option: RequestInit = { next: { revalidate: 0 } }
+) => {
+  const res = await fetch(`/api/categories?type=${type}`, option)
 
   // check status
   if (!res.ok) {

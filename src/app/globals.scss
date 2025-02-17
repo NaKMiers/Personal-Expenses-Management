@@ -30,6 +30,10 @@
   background-color: #a8bbbf;
 }
 
+.container {
+  @apply mx-auto w-full max-w-1200;
+}
+
 .trans-200 {
   @apply transition-all duration-200 ease-in-out;
 }
@@ -43,8 +47,8 @@
 }
 
 .wiggle {
-  @apply trans-200 group-hover:animate-scale-wiggle group-hover:scale-[1.2];
-  @apply trans-200 hover:animate-scale-wiggle hover:scale-[1.2];
+  @apply trans-200 group-hover:scale-[1.2] group-hover:animate-scale-wiggle;
+  @apply trans-200 hover:scale-[1.2] hover:animate-scale-wiggle;
   transform-origin: center;
 }
 
@@ -55,7 +59,7 @@
 }
 
 .wiggle-1 {
-  @apply trans-200 hover:animate-scale-wiggle hover:scale-[1.2];
+  @apply trans-200 hover:scale-[1.2] hover:animate-scale-wiggle;
   transform-origin: center;
 }
 
@@ -70,7 +74,7 @@
 }
 
 .loading {
-  @apply bg-loading animate-pulse;
+  @apply animate-pulse bg-loading;
 }
 
 .number-input::-webkit-inner-spin-button,

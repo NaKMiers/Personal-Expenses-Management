@@ -1,11 +1,12 @@
 // User Settings
 
-// [GET]: /user-settings
+// [GET]: /user-settings/:id
 export const getUserSettingsApi = async (
+  userId: string,
   prefix: string = '',
   option: RequestInit = { next: { revalidate: 0 } }
 ) => {
-  const res = await fetch(`${prefix}/api/user-settings`, option)
+  const res = await fetch(`${prefix}/api/user-settings/${userId}`, option)
 
   // check status
   if (!res.ok) {

@@ -38,7 +38,7 @@ function DesktopNavbar() {
 
   return (
     <div className="hidden border-b border-slate-200/20 md:block">
-      <nav className="flex items-center justify-between px-8">
+      <nav className="container flex items-center justify-between px-8">
         <div className="flex h-[80px] min-h-[60px] items-center gap-x-4">
           <Logo />
           <div className="flex h-full">

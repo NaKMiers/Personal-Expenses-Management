@@ -15,14 +15,23 @@ import { LuCalendar, LuX } from 'react-icons/lu'
 import { RiDonutChartFill } from 'react-icons/ri'
 import { Calendar } from './ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
+import { currencies } from '@/lib/currencies'
 
 interface CreateTransactionDialogProps {
   trigger: ReactNode
   type: TransactionType
+  currency: string
+  exchangeRate: number
   className?: string
 }
 
-function CreateTransactionDialog({ trigger, type, className = '' }: CreateTransactionDialogProps) {
+function CreateTransactionDialog({
+  trigger,
+  currency,
+  exchangeRate,
+  type,
+  className = '',
+}: CreateTransactionDialogProps) {
   const {
     register,
     handleSubmit,
@@ -106,8 +115,8 @@ function CreateTransactionDialog({ trigger, type, className = '' }: CreateTransa
         const { transaction, message } = await createTransactionApi({
           ...data,
           date: toUTC(data.date),
+          amount: data.amount / exchangeRate,
         })
-        console.log('transaction', transaction)
         toast.success(message, { id: 'create-transaction' })
         setOpen(false)
         reset()
@@ -119,7 +128,7 @@ function CreateTransactionDialog({ trigger, type, className = '' }: CreateTransa
         setSaving(false)
       }
     },
-    [reset, handleValidate]
+    [reset, handleValidate, exchangeRate]
   )
   return (
     <div className={`relative ${className}`}>
@@ -128,7 +137,7 @@ function CreateTransactionDialog({ trigger, type, className = '' }: CreateTransa
       <AnimatePresence>
         {open && (
           <div
-            className="px-21/2 md:px-21 fixed left-0 top-0 z-10 flex h-screen w-screen items-center justify-center"
+            className="fixed left-0 top-0 z-10 flex h-screen w-screen items-center justify-center px-21/2 md:px-21"
             onClick={() => setOpen(false)}
           >
             <motion.div
@@ -137,9 +146,9 @@ function CreateTransactionDialog({ trigger, type, className = '' }: CreateTransa
               exit={{ opacity: 0, y: 10 }}
               transition={{ duration: 0.3 }}
               onClick={e => e.stopPropagation()}
-              className="p-21 z-10 w-full max-w-[500px] rounded-lg border border-slate-200/30 bg-neutral-950"
+              className="z-10 w-full max-w-[500px] rounded-lg border border-slate-200/30 bg-neutral-950 p-21"
             >
-              <div className="gap-21 flex items-start justify-between">
+              <div className="flex items-start justify-between gap-21">
                 <p className="text-base font-semibold">
                   Create a new{' '}
                   <span className={`${type === 'income' ? 'text-emerald-500' : 'text-rose-500'}`}>
@@ -164,7 +173,7 @@ function CreateTransactionDialog({ trigger, type, className = '' }: CreateTransa
                   </p>
                   <input
                     type="text"
-                    className="px-21/2 mt-2 h-10 w-full rounded-md border border-slate-200/30 bg-transparent"
+                    className="mt-2 h-10 w-full rounded-md border border-slate-200/30 bg-transparent px-21/2"
                     {...register('description', { required: false })}
                     onFocus={() => clearErrors('description')}
                   />
@@ -180,13 +189,18 @@ function CreateTransactionDialog({ trigger, type, className = '' }: CreateTransa
                   <p className="mt-3 font-semibold">
                     Amount <span className="font-normal">(required)</span>
                   </p>
-                  <input
-                    type="number"
-                    min={0}
-                    className="number-input px-21/2 mt-2 h-10 w-full rounded-md border border-slate-200/30 bg-transparent"
-                    {...register('amount', { required: false })}
-                    onFocus={() => clearErrors('amount')}
-                  />{' '}
+                  <div className="relative mt-2 flex h-10 w-full rounded-md border border-slate-200/30">
+                    <span className="absolute left-0 top-0 flex h-full w-8 items-center justify-center text-base">
+                      {currencies.find(c => c.value === currency)?.symbol}
+                    </span>
+                    <input
+                      type="number"
+                      min={0}
+                      className="number-input h-full w-full bg-transparent px-21/2 pl-10"
+                      {...register('amount', { required: false })}
+                      onFocus={() => clearErrors('amount')}
+                    />
+                  </div>{' '}
                   {errors.amount?.message && (
                     <span className="ml-1 mt-0.5 text-xs italic text-rose-400">
                       {errors.amount?.message?.toString()}
@@ -194,7 +208,7 @@ function CreateTransactionDialog({ trigger, type, className = '' }: CreateTransa
                   )}
                 </div>
 
-                <div className="gap-21/2 flex">
+                <div className="flex gap-21/2">
                   {/* Category */}
                   <div className="mt-3 flex flex-1 flex-col">
                     <p className="mb-2 font-semibold">Category</p>
@@ -217,7 +231,7 @@ function CreateTransactionDialog({ trigger, type, className = '' }: CreateTransa
                     <div onFocus={() => clearErrors('date')}>
                       <Popover>
                         <PopoverTrigger className="w-full">
-                          <button className="px-21/2 flex h-9 w-full items-center justify-between gap-2 rounded-md border border-slate-200/30 bg-neutral-950 text-start text-sm font-semibold">
+                          <button className="flex h-9 w-full items-center justify-between gap-2 rounded-md border border-slate-200/30 bg-neutral-950 px-21/2 text-start text-sm font-semibold">
                             {moment(form.date).format('MMM DD, YYYY')}
                             <LuCalendar size={18} />
                           </button>
@@ -246,9 +260,9 @@ function CreateTransactionDialog({ trigger, type, className = '' }: CreateTransa
                 </div>
               </div>
 
-              <div className="gap-21/2 mt-3 flex items-center justify-end">
+              <div className="mt-3 flex items-center justify-end gap-21/2">
                 <button
-                  className="px-21/2 h-10 rounded-md bg-neutral-700 text-[13px] font-semibold"
+                  className="h-10 rounded-md bg-neutral-700 px-21/2 text-[13px] font-semibold"
                   onClick={() => {
                     setOpen(false)
                     reset()
@@ -257,7 +271,7 @@ function CreateTransactionDialog({ trigger, type, className = '' }: CreateTransa
                   Cancel
                 </button>
                 <button
-                  className="px-21/2 text-dark h-10 rounded-md bg-white text-[13px] font-semibold"
+                  className="h-10 rounded-md bg-white px-21/2 text-[13px] font-semibold text-dark"
                   onClick={handleSubmit(handleCreateTransaction)}
                 >
                   {saving ? (

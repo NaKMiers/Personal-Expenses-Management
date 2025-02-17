@@ -2,6 +2,7 @@
 
 import { currencies, CurrencyType } from '@/lib/currencies'
 import { editUserSettingsApi, getUserSettingsApi } from '@/requests'
+import { useUser } from '@clerk/nextjs'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -12,6 +13,9 @@ interface CurrencySelectionProps {
 }
 
 function CurrencySelection({ className = '' }: CurrencySelectionProps) {
+  // hooks
+  const { user } = useUser()
+
   // states
   const [open, setOpen] = useState<boolean>(false)
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyType | null>(null)
@@ -22,11 +26,13 @@ function CurrencySelection({ className = '' }: CurrencySelectionProps) {
   // initial set user settings
   useEffect(() => {
     const getUserSettings = async () => {
+      if (!user) return
+
       // start loading
       setGetting(true)
 
       try {
-        const { userSettings } = await getUserSettingsApi()
+        const { userSettings } = await getUserSettingsApi(user.id)
         console.log('userSettings', userSettings)
 
         const userCurrency =
@@ -42,7 +48,7 @@ function CurrencySelection({ className = '' }: CurrencySelectionProps) {
     }
 
     getUserSettings()
-  }, [])
+  }, [user])
 
   // change currency
   const handleChangeCurrency = useCallback(async (value: string) => {

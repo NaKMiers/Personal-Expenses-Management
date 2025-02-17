@@ -1,6 +1,23 @@
-import { clerkMiddleware } from '@clerk/nextjs/server'
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { NextResponse } from 'next/server'
 
-export default clerkMiddleware()
+const isByPassAuthRoute = createRouteMatcher(['/sign-in', '/sign-up', '/api/user-settings(.*)'])
+
+const isRequiredAuthRoute = createRouteMatcher(['/', '/wizard(.*)', '/transactions(.*)', '/api(.*)'])
+
+export default clerkMiddleware(async (auth, req) => {
+  const { userId, redirectToSignIn } = await auth()
+
+  if (isByPassAuthRoute(req)) {
+    console.log('Bypass auth route')
+    return NextResponse.next()
+  }
+
+  // require auth X-> redirect to sign-in page
+  if (!userId && isRequiredAuthRoute(req)) {
+    redirectToSignIn()
+  }
+})
 
 export const config = {
   matcher: [

@@ -13,14 +13,6 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     // connect to database
     await connectDatabase()
 
-    // get current user
-    const user = await currentUser()
-
-    // check if user is not found
-    if (!user) {
-      redirect('/sign-in')
-    }
-
     // get category id from params
     const { id } = await params
 
