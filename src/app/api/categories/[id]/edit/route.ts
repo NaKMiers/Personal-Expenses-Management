@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import '@/models/CategoryModel'
 
 // [PUT]: /categories/:id/edit
-export async function PUT(req: NextRequest, { params: { id } }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     // connect to database
     await connectDatabase()
@@ -20,6 +20,9 @@ export async function PUT(req: NextRequest, { params: { id } }: { params: { id: 
     if (!user) {
       redirect('/sign-in')
     }
+
+    // get category id from params
+    const { id } = await params
 
     // get category data from request body
     const { name, icon, type } = await req.json()

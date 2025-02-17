@@ -10,7 +10,7 @@ import '@/models/TransactionModel'
 export const dynamic = 'force-dynamic'
 
 // [PUT]: /transactions/:id/edit
-export async function PUT(req: NextRequest, { params: { id } }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   console.log('- Edit Transaction -')
 
   try {
@@ -24,6 +24,9 @@ export async function PUT(req: NextRequest, { params: { id } }: { params: { id: 
     if (!user) {
       redirect('/sign-in')
     }
+
+    // get transaction id from params
+    const { id } = await params
 
     // get transaction to check authorization
     const transaction: any = await TransactionModel.findById(id).lean()

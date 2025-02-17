@@ -97,7 +97,7 @@ function CreateCategoryDialog({ trigger, type, refetch, className = '' }: Create
       <AnimatePresence>
         {open && (
           <div
-            className="fixed left-0 top-0 z-10 flex h-screen w-screen items-center justify-center px-21/2 md:px-21"
+            className="px-21/2 md:px-21 fixed left-0 top-0 z-10 flex h-screen w-screen items-center justify-center"
             onClick={() => setOpen(false)}
           >
             <motion.div
@@ -106,12 +106,16 @@ function CreateCategoryDialog({ trigger, type, refetch, className = '' }: Create
               exit={{ opacity: 0, y: 10 }}
               transition={{ duration: 0.3 }}
               onClick={e => e.stopPropagation()}
-              className="z-10 w-full max-w-[500px] rounded-lg border border-slate-200/30 bg-neutral-950 p-21"
+              className="p-21 z-10 w-full max-w-[500px] rounded-lg border border-slate-200/30 bg-neutral-950"
             >
-              <div className="flex items-start justify-between gap-21">
+              <div className="gap-21 flex items-start justify-between">
                 <div>
                   <p className="text-base font-semibold">
-                    Create <span className="text-emerald-500">{type}</span> category
+                    Create{' '}
+                    <span className={`${type === 'income' ? 'text-emerald-500' : 'text-rose-500'}`}>
+                      {type}
+                    </span>{' '}
+                    category
                   </p>
                   <p className="text-slate-300">Categories are used to group your transactions</p>
                 </div>
@@ -130,7 +134,7 @@ function CreateCategoryDialog({ trigger, type, refetch, className = '' }: Create
                 </p>
                 <input
                   type="text"
-                  className="mt-2 h-10 w-full rounded-md border border-slate-200/30 bg-transparent px-21/2"
+                  className="px-21/2 mt-2 h-10 w-full rounded-md border border-slate-200/30 bg-transparent"
                   {...register('name', { required: false })}
                   onFocus={() => clearErrors('name')}
                 />
@@ -167,9 +171,9 @@ function CreateCategoryDialog({ trigger, type, refetch, className = '' }: Create
                 <p className="mt-2 text-slate-300">This is how your category will appear in the app</p>
               </div>
 
-              <div className="mt-3 flex items-center justify-end gap-21/2">
+              <div className="gap-21/2 mt-3 flex items-center justify-end">
                 <button
-                  className="h-10 rounded-md bg-neutral-700 px-21/2 text-[13px] font-semibold"
+                  className="px-21/2 h-10 rounded-md bg-neutral-700 text-[13px] font-semibold"
                   onClick={() => {
                     setOpen(false)
                     reset()
@@ -178,7 +182,7 @@ function CreateCategoryDialog({ trigger, type, refetch, className = '' }: Create
                   Cancel
                 </button>
                 <button
-                  className="h-10 rounded-md bg-white px-21/2 text-[13px] font-semibold text-dark"
+                  className="px-21/2 text-dark h-10 rounded-md bg-white text-[13px] font-semibold"
                   onClick={handleSubmit(handleCreateCategory)}
                 >
                   {saving ? (

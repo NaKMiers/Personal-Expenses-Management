@@ -20,14 +20,14 @@ async function DashboardPage() {
               }
             />
 
-            {/* <CreateTransactionDialog
+            <CreateTransactionDialog
               type="expense"
               trigger={
                 <button className="trans-200 h-8 rounded-md border-2 border-rose-500 bg-rose-950 px-2 text-xs font-semibold hover:bg-rose-700">
                   New Expense 😕
                 </button>
               }
-            /> */}
+            />
           </div>
         </div>
       </div>

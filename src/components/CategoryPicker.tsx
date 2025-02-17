@@ -2,12 +2,14 @@
 
 import { TransactionType } from '@/lib/types'
 import { ICategory } from '@/models/CategoryModel'
-import { getUserCategoriesApi } from '@/requests/categoryRequests'
+import { deleteCategoryApi, getUserCategoriesApi } from '@/requests/categoryRequests'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { LuChevronsUpDown, LuSearch, LuSprout, LuSquarePlus } from 'react-icons/lu'
+import { LuChevronsUpDown, LuSearch, LuSprout, LuSquarePlus, LuX } from 'react-icons/lu'
 import CreateCategoryDialog from './CreateCategoryDialog'
+import { RiDonutChartFill } from 'react-icons/ri'
+import ConfirmDialog from './ConfirmDialog'
 
 interface CategoryPickerProps {
   type: TransactionType
@@ -23,6 +25,7 @@ function CategoryPicker({ type, onChange, className = '' }: CategoryPickerProps)
   const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(null)
 
   const [getting, setGetting] = useState<boolean>(true)
+  const [deleting, setDeleting] = useState<string>('')
   const [filterText, setFilterText] = useState<string>('')
 
   // get user categories
@@ -68,13 +71,42 @@ function CategoryPicker({ type, onChange, className = '' }: CategoryPickerProps)
     setFilteredCategories(results)
   }, [categories, filterText])
 
+  // delete category
+  const handleDeleteCategory = useCallback(
+    async (id: string) => {
+      if (!id) return
+
+      // start loading
+      setDeleting(id)
+
+      try {
+        const { deletedCategory, message } = await deleteCategoryApi(id)
+
+        setCategories(categories.filter(category => category._id !== deletedCategory._id))
+        setFilteredCategories(
+          filteredCategories.filter(category => category._id !== deletedCategory._id)
+        )
+        if (selectedCategory?._id === deletedCategory._id) setSelectedCategory(null)
+
+        toast.success(message, { id: 'delete-category' })
+      } catch (err: any) {
+        toast.error(err.message, { id: 'delete-category' })
+        console.log(err)
+      } finally {
+        // stop loading
+        setDeleting('')
+      }
+    },
+    [selectedCategory, categories, filteredCategories]
+  )
+
   return (
     <div className={`relative ${className}`}>
       {getting ? (
         <div className="loading h-9 rounded-md" />
       ) : (
         <button
-          className="flex h-9 w-full items-center justify-between gap-2 rounded-md border border-slate-200/30 bg-neutral-950 px-21/2 text-start text-sm font-semibold"
+          className="px-21/2 flex h-9 w-full items-center justify-between gap-2 rounded-md border border-slate-200/30 bg-neutral-950 text-start text-sm font-semibold"
           onClick={() => setOpen(!open)}
         >
           {selectedCategory ? (
@@ -140,21 +172,45 @@ function CategoryPicker({ type, onChange, className = '' }: CategoryPickerProps)
             <div className="flex max-h-[120px] flex-col overflow-y-auto p-1">
               {filteredCategories.length > 0 ? (
                 filteredCategories.map(category => (
-                  <button
-                    className="trans-200 rounded-md bg-neutral-950 px-21/2 py-1.5 text-start text-sm font-semibold hover:bg-slate-200/30"
-                    onClick={() => {
-                      setOpen(false)
-                      setSelectedCategory(category)
-                      onChange(category._id)
-                    }}
-                    disabled={false}
+                  <div
+                    className="flex gap-1"
                     key={category._id}
                   >
-                    <span>{category.icon}</span> {category.name}
-                  </button>
+                    <button
+                      className="trans-200 px-21/2 w-full rounded-md bg-neutral-950 py-1.5 text-start text-sm font-semibold hover:bg-slate-200/30"
+                      onClick={() => {
+                        setOpen(false)
+                        setSelectedCategory(category)
+                        onChange(category._id)
+                      }}
+                      disabled={false}
+                    >
+                      <span>{category.icon}</span> {category.name}
+                    </button>
+                    <ConfirmDialog
+                      label="Delete category"
+                      subLabel={`Are you sure you want to delete ${category.name} category?`}
+                      confirmLabel="Delete"
+                      cancelLabel="Cancel"
+                      onConfirm={() => handleDeleteCategory(category._id)}
+                      disabled={deleting === category._id}
+                      trigger={
+                        <button className="trans-200 px-21/2 flex-shrink-0 rounded-md bg-neutral-950 py-1.5 text-start text-sm font-semibold hover:bg-slate-200/30">
+                          {deleting === category._id ? (
+                            <RiDonutChartFill
+                              size={16}
+                              className="animate-spin text-slate-400"
+                            />
+                          ) : (
+                            <LuX size={16} />
+                          )}
+                        </button>
+                      }
+                    />
+                  </div>
                 ))
               ) : (
-                <div className="flex flex-col items-center justify-center p-21">
+                <div className="p-21 flex flex-col items-center justify-center">
                   <p className="text-sm font-semibold text-slate-300">Category not found</p>
                   <p className="mt-1 text-xs text-slate-300/80">Create new category now!</p>
                 </div>

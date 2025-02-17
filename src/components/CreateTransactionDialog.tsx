@@ -141,7 +141,11 @@ function CreateTransactionDialog({ trigger, type, className = '' }: CreateTransa
             >
               <div className="gap-21 flex items-start justify-between">
                 <p className="text-base font-semibold">
-                  Create a new <span className="text-emerald-500">{type}</span> transaction
+                  Create a new{' '}
+                  <span className={`${type === 'income' ? 'text-emerald-500' : 'text-rose-500'}`}>
+                    {type}
+                  </span>{' '}
+                  transaction
                 </p>
 
                 <button
@@ -220,7 +224,16 @@ function CreateTransactionDialog({ trigger, type, className = '' }: CreateTransa
                         </PopoverTrigger>
 
                         <PopoverContent className="w-full overflow-hidden rounded-md p-0 outline-none">
-                          <Calendar mode="single" />
+                          <Calendar
+                            className="bg-neutral-900"
+                            mode="single"
+                            selected={form.date}
+                            onSelect={date => {
+                              setValue('date', date)
+                              clearErrors('date')
+                            }}
+                            initialFocus
+                          />
                         </PopoverContent>
                       </Popover>
                     </div>
