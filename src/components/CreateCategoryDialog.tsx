@@ -170,7 +170,7 @@ function CreateCategoryDialog({
                     </button>
                   </PopoverTrigger>
 
-                  <PopoverContent className="w-full translate-y-1/2 p-0 outline-none">
+                  <PopoverContent className="w-full translate-x-10 translate-y-1/2 p-0 outline-none">
                     <Picker
                       data={data}
                       onEmojiSelect={(emoji: any) => setValue('icon', emoji.native)}
