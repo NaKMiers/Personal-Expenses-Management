@@ -27,7 +27,6 @@ export async function DELETE(req: NextRequest) {
 
     // get transaction ids to delete
     const { ids } = await req.json()
-    console.log('ids:', ids)
 
     // get delete transactions
     const deletedTransactions = await TransactionModel.find({ _id: { $in: ids } }).lean()

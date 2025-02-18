@@ -49,6 +49,8 @@ interface CategoryProps {
 }
 
 function Category({ label, categories, currency, rate, color }: CategoryProps) {
+  const allTotal = categories.reduce((acc, { total }) => acc + total, 0)
+
   return (
     <div className="rounded-md border border-slate-200/30 bg-neutral-800/30 p-21">
       <p className="font-body text-lg font-bold uppercase tracking-wider text-neutral-500">{label}</p>
@@ -58,7 +60,10 @@ function Category({ label, categories, currency, rate, color }: CategoryProps) {
           <div key={category._id}>
             <div className="flex justify-between gap-2">
               <p className="text-sm font-semibold text-neutral-400">
-                <span>{category.icon}</span> <span>{category.name} (50%)</span>
+                <span>{category.icon}</span>{' '}
+                <span>
+                  {category.name} ({((total / allTotal) * 100).toFixed(0)}% )
+                </span>
               </p>
 
               <p className="text-sm font-semibold text-neutral-400">
@@ -67,7 +72,7 @@ function Category({ label, categories, currency, rate, color }: CategoryProps) {
             </div>
 
             <Progress
-              value={50}
+              value={(total / allTotal) * 100}
               className="mt-2 bg-neutral-700"
               indicator={color}
             />

@@ -54,7 +54,6 @@ function EditTransactionDialog({
   const [open, setOpen] = useState<boolean>(false)
   const [saving, setSaving] = useState<boolean>(false)
 
-  console.log('form', form)
   const { userSettings, exchangeRate } = useAppSelector(state => state.settings)
 
   // validate form

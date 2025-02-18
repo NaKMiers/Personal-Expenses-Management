@@ -33,8 +33,6 @@ export async function GET(req: NextRequest) {
       filter['type'] = type
     }
 
-    console.log('Filter:', filter)
-
     // get user categories
     const categories = await CategoryModel.find(filter).lean()
 

@@ -19,8 +19,6 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     // get category data from request body
     const { name, icon, type } = await req.json()
 
-    console.log('type', type)
-
     // update category
     const updatedCategory: any = await CategoryModel.findByIdAndUpdate(
       id,

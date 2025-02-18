@@ -465,7 +465,6 @@ function Row({
           transaction={data}
           update={(transaction: IFullTransaction) => {
             setData(transaction)
-            console.log('update', transaction)
           }}
         />
 

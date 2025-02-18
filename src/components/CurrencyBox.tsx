@@ -26,7 +26,6 @@ function CurrencySelection() {
   // hooks
   const dispatch = useAppDispatch()
   const { userSettings, exchangeRate } = useAppSelector(state => state.settings)
-  console.log('exchangeRate', exchangeRate)
 
   // states
   const [open, setOpen] = useState<boolean>(false)
@@ -67,7 +66,6 @@ function CurrencySelection() {
         const { updatedUserSettings } = await editUserSettingsApi(value)
 
         setSelectedCurrency(currencies.find(c => c.value === updatedUserSettings.currency) || null)
-        console.log('updatedUserSettings', updatedUserSettings)
         dispatch(setUserSettings(updatedUserSettings))
 
         toast.success('Currency updated successfully 🥳', {

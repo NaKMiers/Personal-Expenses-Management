@@ -47,8 +47,6 @@ function UseSettings() {
         })
         const data = await res.json()
 
-        console.log('exchange rates', data.rates)
-
         dispatch(setExchangeRates(data.rates))
         dispatch(setExchangeRate(data.rates[settings.userSettings.currency]))
       } catch (err: any) {
