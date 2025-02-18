@@ -2,7 +2,6 @@
 
 import CreateTransactionDialog from '@/components/CreateTransactionDialog copy'
 import Overview from '@/components/Overview'
-import { useAppSelector } from '@/hooks'
 import { useUser } from '@clerk/nextjs'
 
 function DashboardPage() {
