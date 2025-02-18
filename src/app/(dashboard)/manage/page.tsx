@@ -177,7 +177,7 @@ function UserCategories({
                     trigger={
                       <button className="trans-200 flex h-full w-full items-center justify-center gap-2 rounded-md hover:bg-neutral-600">
                         <LuTrash />
-                        <span className="text-sm">Remove</span>
+                        <span className="hidden text-sm md:block">Remove</span>
                       </button>
                     }
                   />
@@ -187,7 +187,7 @@ function UserCategories({
                     trigger={
                       <button className="trans-200 flex h-full w-full items-center justify-center gap-2 rounded-md hover:bg-neutral-600">
                         <LuPen />
-                        <span className="text-sm">Edit</span>
+                        <span className="hidden text-sm md:block">Edit</span>
                       </button>
                     }
                     update={(category: ICategory) =>
