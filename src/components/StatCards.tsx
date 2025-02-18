@@ -1,26 +1,20 @@
 import { OverviewType } from '@/app/api/stats/overview/route'
-import { currencies } from '@/lib/currencies'
+import { useAppSelector } from '@/hooks'
 import { formatSymbol } from '@/lib/utils'
-import { IUserSettings } from '@/models/UserSettingsModel'
 import { ReactNode } from 'react'
 import CountUp from 'react-countup'
 import { LuTrendingDown, LuTrendingUp, LuWallet } from 'react-icons/lu'
 
 interface StatCardsProps {
   loading: boolean
-  userSettings: IUserSettings | null
-  exchangeRate: number
   className?: string
   overview?: OverviewType | null
 }
 
-function StatCards({
-  loading,
-  userSettings,
-  exchangeRate,
-  overview = null,
-  className = '',
-}: StatCardsProps) {
+function StatCards({ loading, overview = null, className = '' }: StatCardsProps) {
+  // store
+  const { userSettings, exchangeRate } = useAppSelector(state => state.settings)
+
   return (
     <div className={`grid grid-cols-1 gap-21/2 md:grid-cols-3 md:gap-21 ${className}`}>
       {overview && !loading ? (

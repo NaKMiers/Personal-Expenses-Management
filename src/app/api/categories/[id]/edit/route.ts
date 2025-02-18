@@ -1,11 +1,11 @@
 import { connectDatabase } from '@/config/database'
 import CategoryModel from '@/models/CategoryModel'
-import { currentUser } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
+import TransactionModel from '@/models/TransactionModel'
 import { NextRequest, NextResponse } from 'next/server'
 
-// Models: Category
+// Models: Category, Transaction
 import '@/models/CategoryModel'
+import '@/models/TransactionModel'
 
 // [PUT]: /categories/:id/edit
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -19,12 +19,22 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     // get category data from request body
     const { name, icon, type } = await req.json()
 
+    console.log('type', type)
+
     // update category
-    const updatedCategory = await CategoryModel.findByIdAndUpdate(
+    const updatedCategory: any = await CategoryModel.findByIdAndUpdate(
       id,
       { $set: { name, icon, type } },
       { new: true }
     ).lean()
+
+    // check if category is not found
+    if (!updatedCategory) {
+      return NextResponse.json({ message: 'Category not found' }, { status: 404 })
+    }
+
+    // update all transactions related to this category
+    await TransactionModel.updateMany({ category: id }, { $set: { type: updatedCategory.type } })
 
     // return response
     return NextResponse.json({ updatedCategory, message: 'Category updated' }, { status: 200 })

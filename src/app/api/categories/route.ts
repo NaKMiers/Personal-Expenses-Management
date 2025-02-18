@@ -26,8 +26,17 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.nextUrl)
     const type = searchParams.get('type')
 
+    const filter: any = { userId: user.id }
+
+    // check if type is provided
+    if (type) {
+      filter['type'] = type
+    }
+
+    console.log('Filter:', filter)
+
     // get user categories
-    const categories = await CategoryModel.find({ userId: user.id, type }).lean()
+    const categories = await CategoryModel.find(filter).lean()
 
     // return response
     return NextResponse.json({ categories, message: '' }, { status: 200 })

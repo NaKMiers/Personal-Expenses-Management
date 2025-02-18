@@ -1,4 +1,4 @@
-import CurrencySelection from '@/components/CurrencySelection'
+import CurrencyBox from '@/components/CurrencyBox'
 import Logo from '@/components/Logo'
 import { currentUser } from '@clerk/nextjs/server'
 import Link from 'next/link'
@@ -27,12 +27,7 @@ async function WizardPage() {
 
       <div className="h-px w-full border-t border-slate-200/30" />
 
-      <div className="w-full rounded-lg border border-slate-200/30 px-21 py-3">
-        <p className="font-bold">Currency</p>
-        <p className="text-sm text-slate-300">Set your default currency for transactions</p>
-
-        <CurrencySelection className="mt-3" />
-      </div>
+      <CurrencyBox />
 
       <div className="h-px w-full border-t border-slate-200/30" />
 

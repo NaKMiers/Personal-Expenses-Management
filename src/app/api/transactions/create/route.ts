@@ -24,12 +24,6 @@ export async function POST(req: NextRequest) {
     // get transaction data from request body
     const { description, amount, category, date, type } = await req.json()
 
-    console.log('description', description)
-    console.log('amount', amount)
-    console.log('category', category)
-    console.log('date', date)
-    console.log('type', type)
-
     // create new transaction
     const transaction = await TransactionModel.create({
       amount,

@@ -19,6 +19,7 @@ interface ConfirmDialogProps {
   cancelLabel: string
   onConfirm: () => void
   disabled?: boolean
+  className?: string
 }
 
 function ConfirmDialog({
@@ -29,13 +30,19 @@ function ConfirmDialog({
   cancelLabel,
   onConfirm,
   disabled = false,
+  className = '',
 }: ConfirmDialogProps) {
   return (
     <AlertDialog>
-      <AlertDialogTrigger disabled={disabled}>{trigger}</AlertDialogTrigger>
+      <AlertDialogTrigger
+        disabled={disabled}
+        className={`h-full w-full ${className}`}
+      >
+        {trigger}
+      </AlertDialogTrigger>
 
-      <AlertDialogContent className="px-21/2 md:px-21 border-none outline-none">
-        <div className="border-light p-21 flex flex-col gap-4 rounded-md border-2 bg-neutral-950">
+      <AlertDialogContent className="border-none px-21/2 outline-none md:px-21">
+        <div className="flex flex-col gap-4 rounded-md border-2 border-light bg-neutral-950 p-21">
           <AlertDialogHeader>
             <AlertDialogTitle>{label}</AlertDialogTitle>
             <AlertDialogDescription>{subLabel}</AlertDialogDescription>

@@ -1,9 +1,11 @@
 'use client'
 
 import CategoryPicker from '@/components/CategoryPicker'
-import { TransactionType } from '@/lib/types'
+import { useAppSelector } from '@/hooks'
+import { currencies } from '@/lib/currencies'
 import { toUTC } from '@/lib/utils'
-import { createTransactionApi } from '@/requests'
+import { IFullTransaction } from '@/models/TransactionModel'
+import { editTransactionApi } from '@/requests'
 import { AnimatePresence, motion } from 'framer-motion'
 import moment from 'moment'
 import { ReactNode, useCallback, useState } from 'react'
@@ -15,23 +17,20 @@ import { LuCalendar, LuX } from 'react-icons/lu'
 import { RiDonutChartFill } from 'react-icons/ri'
 import { Calendar } from './ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
-import { currencies } from '@/lib/currencies'
 
-interface CreateTransactionDialogProps {
+interface EditTransactionDialogProps {
   trigger: ReactNode
-  type: TransactionType
-  currency: string
-  exchangeRate: number
+  transaction: IFullTransaction
+  update: (transaction: IFullTransaction) => void
   className?: string
 }
 
-function CreateTransactionDialog({
+function EditTransactionDialog({
   trigger,
-  currency,
-  exchangeRate,
-  type,
+  transaction,
+  update,
   className = '',
-}: CreateTransactionDialogProps) {
+}: EditTransactionDialogProps) {
   const {
     register,
     handleSubmit,
@@ -43,17 +42,20 @@ function CreateTransactionDialog({
     reset,
   } = useForm<FieldValues>({
     defaultValues: {
-      description: '',
-      category: '',
-      amount: '',
-      date: moment().format('YYYY-MM-DD'),
-      type,
+      description: transaction.description || '',
+      category: transaction.category || '',
+      amount: transaction.amount || '',
+      date: transaction.date || new Date(),
+      type: transaction.type || 'expense',
     },
   })
 
   const form = watch()
   const [open, setOpen] = useState<boolean>(false)
   const [saving, setSaving] = useState<boolean>(false)
+
+  console.log('form', form)
+  const { userSettings, exchangeRate } = useAppSelector(state => state.settings)
 
   // validate form
   const handleValidate: SubmitHandler<FieldValues> = useCallback(
@@ -100,8 +102,8 @@ function CreateTransactionDialog({
     [setError]
   )
 
-  // create transaction
-  const handleCreateTransaction: SubmitHandler<FieldValues> = useCallback(
+  // update transaction
+  const handleEditTransaction: SubmitHandler<FieldValues> = useCallback(
     async data => {
       // validate form
       if (!handleValidate(data)) return
@@ -109,26 +111,26 @@ function CreateTransactionDialog({
       // start loading
       setSaving(true)
 
-      toast.loading('Creating transaction...', { id: 'create-transaction' })
+      toast.loading('Updating transaction...', { id: 'update-transaction' })
 
       try {
-        const { transaction, message } = await createTransactionApi({
+        const { updatedTransaction, message } = await editTransactionApi(transaction._id, {
           ...data,
           date: toUTC(data.date),
           amount: data.amount / exchangeRate,
         })
-        toast.success(message, { id: 'create-transaction' })
+        toast.success(message, { id: 'update-transaction' })
+        update(updatedTransaction)
         setOpen(false)
-        reset()
       } catch (err: any) {
-        toast.error('Failed to create transaction', { id: 'create-transaction' })
+        toast.error('Failed to update transaction', { id: 'update-transaction' })
         console.log(err)
       } finally {
         // stop loading
         setSaving(false)
       }
     },
-    [reset, handleValidate, exchangeRate]
+    [handleValidate, update, exchangeRate, transaction]
   )
   return (
     <div className={`relative ${className}`}>
@@ -149,13 +151,7 @@ function CreateTransactionDialog({
               className="z-10 w-full max-w-[500px] rounded-lg border border-slate-200/30 bg-neutral-950 p-21"
             >
               <div className="flex items-start justify-between gap-21">
-                <p className="text-base font-semibold">
-                  Create a new{' '}
-                  <span className={`${type === 'income' ? 'text-emerald-500' : 'text-rose-500'}`}>
-                    {type}
-                  </span>{' '}
-                  transaction
-                </p>
+                <p className="text-base font-semibold">Edit transaction</p>
 
                 <button
                   onClick={() => setOpen(!open)}
@@ -191,7 +187,7 @@ function CreateTransactionDialog({
                   </p>
                   <div className="relative mt-2 flex h-10 w-full rounded-md border border-slate-200/30">
                     <span className="absolute left-0 top-0 flex h-full w-8 items-center justify-center text-base">
-                      {currencies.find(c => c.value === currency)?.symbol}
+                      {currencies.find(c => c.value === userSettings.currency)?.symbol}
                     </span>
                     <input
                       type="number"
@@ -214,8 +210,9 @@ function CreateTransactionDialog({
                     <p className="mb-2 font-semibold">Category</p>
                     <div onFocus={() => clearErrors('category')}>
                       <CategoryPicker
+                        initCategory={transaction.category}
                         onChange={(category: string) => setValue('category', category)}
-                        type={type}
+                        type={form.type}
                       />
                     </div>
                     {errors.category?.message && (
@@ -272,7 +269,7 @@ function CreateTransactionDialog({
                 </button>
                 <button
                   className="h-10 rounded-md bg-white px-21/2 text-[13px] font-semibold text-dark"
-                  onClick={handleSubmit(handleCreateTransaction)}
+                  onClick={handleSubmit(handleEditTransaction)}
                 >
                   {saving ? (
                     <RiDonutChartFill
@@ -292,4 +289,4 @@ function CreateTransactionDialog({
   )
 }
 
-export default CreateTransactionDialog
+export default EditTransactionDialog

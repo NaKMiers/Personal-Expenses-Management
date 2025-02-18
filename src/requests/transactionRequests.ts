@@ -3,8 +3,12 @@
 import { ITransaction } from '@/models/TransactionModel'
 
 // [GET]: /transactions
-export const getUserTransactionsApi = async (option: RequestInit = { next: { revalidate: 0 } }) => {
-  const res = await fetch(`/api/transactions`, option)
+export const getUserTransactionsApi = async (
+  from: Date | string,
+  to: Date | string,
+  option: RequestInit = { next: { revalidate: 0 } }
+) => {
+  const res = await fetch(`/api/transactions?from=${from}&to=${to}`, option)
 
   // check status
   if (!res.ok) {
@@ -30,7 +34,7 @@ export const createTransactionApi = async (data: any) => {
 }
 
 // [PUT]: /transactions/:id/edit
-export const editTransactionApi = async (id: string, data: ITransaction) => {
+export const editTransactionApi = async (id: string, data: any) => {
   const res = await fetch(`/api/transactions/${id}/edit`, {
     method: 'PUT',
     body: JSON.stringify(data),
@@ -44,10 +48,11 @@ export const editTransactionApi = async (id: string, data: ITransaction) => {
   return await res.json()
 }
 
-// [DELETE]: /transactions/:id/delete
-export const deleteTransactionApi = async (id: string) => {
-  const res = await fetch(`/api/transactions/${id}/delete`, {
+// [DELETE]: /transactions/delete
+export const deleteTransactionsApi = async (ids: string[]) => {
+  const res = await fetch(`/api/transactions/delete`, {
     method: 'DELETE',
+    body: JSON.stringify({ ids }),
   })
 
   // check status

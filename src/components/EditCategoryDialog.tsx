@@ -1,5 +1,5 @@
-import { TransactionType } from '@/lib/types'
-import { createCategoryApi } from '@/requests'
+import { ICategory } from '@/models/CategoryModel'
+import { createCategoryApi, editCategoryApi } from '@/requests'
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -9,23 +9,24 @@ import toast from 'react-hot-toast'
 import { LuCircleOff, LuX } from 'react-icons/lu'
 import { RiDonutChartFill } from 'react-icons/ri'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
-import { ICategory } from '@/models/CategoryModel'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select'
 
-interface CreateCategoryDialogProps {
+interface EditCategoryDialogProps {
   trigger: ReactNode
-  type: TransactionType
-  refetch?: () => void
-  update?: (category: ICategory) => void
+  category: ICategory
+  update: (category: ICategory) => void
   className?: string
 }
 
-function CreateCategoryDialog({
-  trigger,
-  type,
-  refetch,
-  update,
-  className = '',
-}: CreateCategoryDialogProps) {
+function EditCategoryDialog({ trigger, category, update, className = '' }: EditCategoryDialogProps) {
   // form
   const {
     register,
@@ -38,9 +39,9 @@ function CreateCategoryDialog({
     reset,
   } = useForm<FieldValues>({
     defaultValues: {
-      name: '',
-      icon: '',
-      type,
+      name: category.name || '',
+      icon: category.icon || '',
+      type: category.type || 'expense',
     },
   })
 
@@ -53,6 +54,15 @@ function CreateCategoryDialog({
   const handleValidate: SubmitHandler<FieldValues> = useCallback(
     data => {
       let isValid = true
+
+      // type is required
+      if (!data.type) {
+        setError('type', {
+          type: 'manual',
+          message: 'Type is required',
+        })
+        isValid = false
+      }
 
       // name is required
       if (!data.name) {
@@ -69,7 +79,7 @@ function CreateCategoryDialog({
   )
 
   // create category
-  const handleCreateCategory: SubmitHandler<FieldValues> = useCallback(
+  const handleEditCategory: SubmitHandler<FieldValues> = useCallback(
     async data => {
       // validate form
       if (!handleValidate(data)) return
@@ -77,31 +87,35 @@ function CreateCategoryDialog({
       // start loading
       setSaving(true)
 
-      toast.loading('Creating category...', { id: 'create-category' })
+      toast.loading('Updating category...', { id: 'update-category' })
 
       try {
-        const { category, message } = await createCategoryApi(data)
+        const { updatedCategory, message } = await editCategoryApi(category._id, data)
 
-        toast.success(message, { id: 'create-category' })
+        toast.success(message, { id: 'update-category' })
         setOpen(false)
         reset()
-        if (refetch) refetch()
-        if (update) update(category)
+
+        update(updatedCategory)
       } catch (err: any) {
-        toast.error('Failed to create category', { id: 'create-category' })
+        toast.error('Failed to update category', { id: 'update-category' })
         console.log(err)
       } finally {
         // stop loading
         setSaving(false)
       }
     },
-    [handleValidate, reset, refetch, update]
+    [handleValidate, reset, update, category]
   )
 
   return (
-    <div className={`relative ${className}`}>
-      <div onClick={() => setOpen(true)}>{trigger}</div>
-
+    <>
+      <div
+        className={`${className}`}
+        onClick={() => setOpen(true)}
+      >
+        {trigger}
+      </div>
       <AnimatePresence>
         {open && (
           <div
@@ -118,13 +132,7 @@ function CreateCategoryDialog({
             >
               <div className="flex items-start justify-between gap-21">
                 <div>
-                  <p className="text-base font-semibold">
-                    Create{' '}
-                    <span className={`${type === 'income' ? 'text-emerald-500' : 'text-rose-500'}`}>
-                      {type}
-                    </span>{' '}
-                    category
-                  </p>
+                  <p className="text-base font-semibold">Edit category</p>
                   <p className="text-sm text-slate-300">
                     Categories are used to group your transactions
                   </p>
@@ -139,7 +147,43 @@ function CreateCategoryDialog({
               </div>
 
               <div className="mt-3 text-xs">
-                <p className="font-semibold">
+                <p className="mb-2 mt-2 font-semibold">
+                  Type <span className="font-normal">(required)</span>
+                </p>
+                <Select
+                  onValueChange={value => setValue('type', value)}
+                  defaultValue={form.type}
+                >
+                  <SelectTrigger className="w-[125px] border border-slate-200/30">
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-neutral-900">
+                    <SelectItem
+                      value="income"
+                      className="text-xs"
+                    >
+                      Income
+                    </SelectItem>
+                    <SelectItem
+                      value="expense"
+                      className="text-xs"
+                    >
+                      Expense
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors.type?.message ? (
+                  <span className="ml-1 mt-0.5 text-xs italic text-rose-400">
+                    {errors.type?.message?.toString()}
+                  </span>
+                ) : (
+                  <p className="mt-1 italic">
+                    When you change this category type, all transactions related to this category will be
+                    changed!
+                  </p>
+                )}
+
+                <p className="mt-3 font-semibold">
                   Name <span className="font-normal">(required)</span>
                 </p>
                 <input
@@ -193,7 +237,7 @@ function CreateCategoryDialog({
                 </button>
                 <button
                   className="h-10 rounded-md bg-white px-21/2 text-[13px] font-semibold text-dark"
-                  onClick={handleSubmit(handleCreateCategory)}
+                  onClick={handleSubmit(handleEditCategory)}
                 >
                   {saving ? (
                     <RiDonutChartFill
@@ -209,8 +253,8 @@ function CreateCategoryDialog({
           </div>
         )}
       </AnimatePresence>
-    </div>
+    </>
   )
 }
 
-export default CreateCategoryDialog
+export default EditCategoryDialog

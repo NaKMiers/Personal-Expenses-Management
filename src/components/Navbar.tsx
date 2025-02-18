@@ -71,7 +71,7 @@ function DesktopNavbar() {
 
 function MobileNavbar() {
   // get user
-  const { user, isSignedIn } = useUser()
+  const { isSignedIn } = useUser()
 
   // states
   const [open, setOpen] = useState<boolean>(false)

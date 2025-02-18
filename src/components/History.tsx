@@ -1,10 +1,10 @@
-import { cn, formatCurrency, toUTC } from '@/lib/utils'
+import { useAppSelector } from '@/hooks'
+import { cn, toUTC } from '@/lib/utils'
 import { ICategory } from '@/models/CategoryModel'
 import { IFullTransaction } from '@/models/TransactionModel'
 import { AnimatePresence, motion } from 'framer-motion'
 import { default as moment, default as momentTZ } from 'moment-timezone'
 import { ReactNode, useEffect, useState } from 'react'
-import { FaDotCircle } from 'react-icons/fa'
 import Chart, { ChartDatum, ChartType } from './Chart'
 import { Switch } from './ui/switch'
 
@@ -14,20 +14,13 @@ interface HistoryProps {
   typeGroups: any
   cateGroups: any
   loading: boolean
-  userSettings: any
-  exchangeRate: number
   className?: string
 }
 
-function History({
-  from,
-  to,
-  typeGroups,
-  cateGroups,
-  userSettings,
-  exchangeRate,
-  className = '',
-}: HistoryProps) {
+function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryProps) {
+  // store
+  const { userSettings, exchangeRate } = useAppSelector(state => state.settings)
+
   // states
   const incomeCates = cateGroups.income
   const [selectedIncomeCates, setSelectedIncomeCates] = useState<ICategory[]>(cateGroups.income)
@@ -173,11 +166,7 @@ function History({
             }
             list={incomeCates}
             selected={selectedIncomeCates}
-            onChange={(item: any) =>
-              setSelectedIncomeCates((prev: any) =>
-                prev.includes(item) ? prev.filter((e: any) => e !== item) : [...prev, item]
-              )
-            }
+            onChange={(list: any[]) => setSelectedIncomeCates(list)}
           />
 
           <MultipleSelection
@@ -189,32 +178,28 @@ function History({
             }
             list={expenseCates}
             selected={selectedExpenseCates}
-            onChange={(item: any) =>
-              setSelectedExpenseCates((prev: any) =>
-                prev.includes(item) ? prev.filter((e: any) => e !== item) : [...prev, item]
-              )
-            }
+            onChange={(list: any[]) => setSelectedExpenseCates(list)}
           />
         </div>
 
         {/* Income and Expense */}
         <div className="flex items-center gap-4">
-          <button className="flex items-center justify-center gap-1.5 text-base font-semibold">
+          <div className="flex items-center justify-center gap-1.5 text-base font-semibold">
             <Switch
               checked={showIncome}
               onCheckedChange={() => setShowIncome(!showIncome)}
               className="bg-emerald-500/70"
             />
             Income
-          </button>
-          <button className="flex items-center justify-center gap-1.5 text-base font-semibold">
+          </div>
+          <div className="flex items-center justify-center gap-1.5 text-base font-semibold">
             <Switch
               checked={showExpense}
               onCheckedChange={() => setShowExpense(!showExpense)}
               className="bg-rose-500/70"
             />
             Expense
-          </button>
+          </div>
 
           {/* Chart Selection */}
           <SingleSelection
@@ -303,9 +288,10 @@ interface MultiSelectionProps {
   onChange: (value: any) => void
 }
 
-function MultipleSelection({ trigger, list, selected, onChange }: MultiSelectionProps) {
+export function MultipleSelection({ trigger, list, selected, onChange }: MultiSelectionProps) {
   // states
   const [open, setOpen] = useState<boolean>(false)
+  const isObjectItem = typeof list[0] === 'object'
 
   return (
     <div className="relative">
@@ -331,22 +317,39 @@ function MultipleSelection({ trigger, list, selected, onChange }: MultiSelection
               className={`trans-200 trans-200 px-3 py-1 text-left font-body text-xs font-semibold tracking-wider text-light ${
                 selected.length === list.length ? 'border-l-2 border-primary pl-2' : ''
               }`}
-              onClick={() => (selected.length === list.length ? onChange([]) : onChange(list))}
+              onClick={selected.length === list.length ? () => onChange([]) : () => onChange(list)}
             >
               <span className="text-nowrap">All</span>
             </button>
             {list.map((item, index) => (
               <button
                 className={`trans-200 trans-200 bg-neutral-800 px-3 py-1 text-left font-body text-xs font-semibold tracking-wider text-light ${
-                  selected.some((ele: any) => ele._id.toString() === item._id.toString())
+                  (
+                    isObjectItem
+                      ? selected.some((ele: any) => ele._id.toString() === item._id.toString())
+                      : selected.includes(item)
+                  )
                     ? 'border-l-2 border-primary pl-2'
                     : ''
                 }`}
-                onClick={() => onChange(item)}
+                onClick={() => {
+                  if (isObjectItem) {
+                    if (selected.some((ele: any) => ele._id.toString() === item._id.toString())) {
+                      return onChange(selected.filter(ele => ele._id.toString() !== item._id.toString()))
+                    } else {
+                      return onChange([...selected, item])
+                    }
+                  } else {
+                    if (selected.includes(item)) {
+                      return onChange(selected.filter(ele => ele !== item))
+                    } else {
+                      return onChange([...selected, item])
+                    }
+                  }
+                }}
                 key={index}
               >
-                <p className="text-nowrap">{item.name}</p>
-                {/* <p className="text-nowrap font-normal">{handleCalc(item)}</p> */}
+                <p className="text-nowrap capitalize">{isObjectItem ? item.name : item}</p>
               </button>
             ))}
           </motion.div>

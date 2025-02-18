@@ -4,8 +4,9 @@ import { currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import TransactionModel, { ITransaction } from '@/models/TransactionModel'
 
-// Models: Transaction
+// Models: Transaction, Category
 import '@/models/TransactionModel'
+import '@/models/CategoryModel'
 
 export const dynamic = 'force-dynamic'
 
@@ -45,17 +46,23 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const { description, amount, category, date, type } = await req.json()
 
     // create new transaction
-    const updatedTransaction = await TransactionModel.findByIdAndUpdate(id, {
-      amount,
-      description,
-      date,
-      userId: user.id,
-      type,
-      category,
-    })
+    const updatedTransaction = await TransactionModel.findByIdAndUpdate(
+      id,
+      {
+        amount,
+        description,
+        date,
+        userId: user.id,
+        type,
+        category,
+      },
+      { new: true }
+    )
+      .populate('category')
+      .lean()
 
     // return response
-    return NextResponse.json({ updatedTransaction, message: '' }, { status: 200 })
+    return NextResponse.json({ updatedTransaction, message: 'Transaction updated' }, { status: 200 })
   } catch (err: any) {
     return NextResponse.json({ message: err.message }, { status: 500 })
   }

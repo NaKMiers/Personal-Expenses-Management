@@ -6,23 +6,24 @@ import { deleteCategoryApi, getUserCategoriesApi } from '@/requests/categoryRequ
 import { AnimatePresence, motion } from 'framer-motion'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { LuChevronsUpDown, LuSearch, LuSprout, LuSquarePlus, LuX } from 'react-icons/lu'
-import CreateCategoryDialog from './CreateCategoryDialog'
+import { LuChevronsUpDown, LuSearch, LuSquarePlus, LuX } from 'react-icons/lu'
 import { RiDonutChartFill } from 'react-icons/ri'
 import ConfirmDialog from './ConfirmDialog'
+import CreateCategoryDialog from './CreateCategoryDialog'
 
 interface CategoryPickerProps {
   type: TransactionType
   onChange: (value: string) => void
+  initCategory?: ICategory
   className?: string
 }
 
-function CategoryPicker({ type, onChange, className = '' }: CategoryPickerProps) {
+function CategoryPicker({ type, onChange, initCategory, className = '' }: CategoryPickerProps) {
   // states
   const [open, setOpen] = useState<boolean>(false)
   const [categories, setCategories] = useState<ICategory[]>([])
   const [filteredCategories, setFilteredCategories] = useState<ICategory[]>([])
-  const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(initCategory || null)
 
   const [getting, setGetting] = useState<boolean>(true)
   const [deleting, setDeleting] = useState<string>('')
@@ -35,8 +36,6 @@ function CategoryPicker({ type, onChange, className = '' }: CategoryPickerProps)
 
     try {
       const { categories } = await getUserCategoriesApi(type)
-
-      console.log('categories:', categories)
 
       setCategories(categories)
       setFilteredCategories(categories)
@@ -111,7 +110,7 @@ function CategoryPicker({ type, onChange, className = '' }: CategoryPickerProps)
         >
           {selectedCategory ? (
             <p>
-              <span>😉</span> {selectedCategory?.name}
+              <span>{selectedCategory.icon}</span> {selectedCategory?.name}
             </p>
           ) : (
             'Select category'
@@ -173,11 +172,11 @@ function CategoryPicker({ type, onChange, className = '' }: CategoryPickerProps)
               {filteredCategories.length > 0 ? (
                 filteredCategories.map(category => (
                   <div
-                    className="flex gap-1"
+                    className="flex justify-center gap-1"
                     key={category._id}
                   >
                     <button
-                      className="trans-200 w-full rounded-md bg-neutral-950 px-21/2 py-1.5 text-start text-sm font-semibold hover:bg-slate-200/30"
+                      className="trans-200 flex-1 rounded-md bg-neutral-950 px-21/2 py-1.5 text-start text-sm font-semibold hover:bg-slate-200/30"
                       onClick={() => {
                         setOpen(false)
                         setSelectedCategory(category)
@@ -194,8 +193,9 @@ function CategoryPicker({ type, onChange, className = '' }: CategoryPickerProps)
                       cancelLabel="Cancel"
                       onConfirm={() => handleDeleteCategory(category._id)}
                       disabled={deleting === category._id}
+                      className="!h-auto !w-auto"
                       trigger={
-                        <button className="trans-200 flex-shrink-0 rounded-md bg-neutral-950 px-21/2 py-1.5 text-start text-sm font-semibold hover:bg-slate-200/30">
+                        <button className="trans-200 h-full flex-shrink-0 rounded-md bg-neutral-950 px-21/2 py-1.5 text-start text-sm font-semibold hover:bg-slate-200/30">
                           {deleting === category._id ? (
                             <RiDonutChartFill
                               size={16}

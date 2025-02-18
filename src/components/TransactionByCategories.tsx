@@ -1,22 +1,17 @@
-import React from 'react'
-import { Progress } from './ui/progress'
+import { useAppSelector } from '@/hooks'
 import { formatCurrency } from '@/lib/utils'
+import { Progress } from './ui/progress'
 
 interface TransactionByCategoriesProps {
   loading: boolean
   types: any
-  userSettings: any
-  exchangeRate: number
   className?: string
 }
 
-function TransactionByCategories({
-  loading,
-  types,
-  userSettings,
-  exchangeRate,
-  className = '',
-}: TransactionByCategoriesProps) {
+function TransactionByCategories({ loading, types, className = '' }: TransactionByCategoriesProps) {
+  // store
+  const { userSettings, exchangeRate } = useAppSelector(state => state.settings)
+
   return (
     <div className={`grid grid-cols-1 gap-21/2 md:grid-cols-2 ${className}`}>
       {types?.income && !loading ? (

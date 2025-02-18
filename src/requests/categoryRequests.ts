@@ -1,14 +1,15 @@
 // Category
 
 import { TransactionType } from '@/lib/types'
-import { ICategory } from '@/models/CategoryModel'
 
 // [GET]: /categories
 export const getUserCategoriesApi = async (
-  type: TransactionType,
+  type?: TransactionType,
   option: RequestInit = { next: { revalidate: 0 } }
 ) => {
-  const res = await fetch(`/api/categories?type=${type}`, option)
+  let query = '?'
+  if (type) query += `type=${type}`
+  const res = await fetch(`/api/categories${query}`, option)
 
   // check status
   if (!res.ok) {
@@ -34,7 +35,7 @@ export const createCategoryApi = async (data: any) => {
 }
 
 // [PUT]: /categories/:id/edit
-export const editCategoryApi = async (id: string, data: ICategory) => {
+export const editCategoryApi = async (id: string, data: any) => {
   const res = await fetch(`/api/categories/${id}/edit`, {
     method: 'PUT',
     body: JSON.stringify(data),

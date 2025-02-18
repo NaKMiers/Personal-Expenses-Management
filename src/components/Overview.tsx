@@ -16,12 +16,7 @@ import StatCards from './StatCards'
 import TransactionByCategories from './TransactionByCategories'
 import { DateRangePicker } from './ui/DateRangePicker'
 
-interface OverviewProps {
-  userSettings: IUserSettings | null
-  exchangeRate: number
-}
-
-function Overview({ userSettings, exchangeRate }: OverviewProps) {
+function Overview() {
   // states
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
     from: moment().startOf('month').toDate(),
@@ -67,11 +62,6 @@ function Overview({ userSettings, exchangeRate }: OverviewProps) {
         income: uniqueIncomeCategories,
         expense: uniqueExpenseCategories,
       })
-
-      console.log('uniqueIncomeCategories', uniqueIncomeCategories)
-      console.log('uniqueExpenseCategories', uniqueExpenseCategories)
-
-      console.log('typeGroups', typeGroups)
     } catch (err: any) {
       console.log(err)
     } finally {
@@ -104,13 +94,15 @@ function Overview({ userSettings, exchangeRate }: OverviewProps) {
           <DateRangePicker
             initialDateFrom={dateRange.from}
             initialDateTo={dateRange.to}
-            showCompare={true}
+            showCompare={false}
             onUpdate={values => {
               const { from, to } = values.range
 
               if (!from || !to) return
-              if (differenceInDays(to, from) > 90) {
-                toast.error(`The selected date range is too large. Max allowed range is 90 days!`)
+              if (differenceInDays(to, from) > +process.env.NEXT_PUBLIC_MAX_DATE_RANGE!) {
+                toast.error(
+                  `The selected date range is too large. Max allowed range is ${process.env.NEXT_PUBLIC_MAX_DATE_RANGE} days!`
+                )
                 return
               }
 
@@ -125,8 +117,6 @@ function Overview({ userSettings, exchangeRate }: OverviewProps) {
         <StatCards
           loading={loading}
           overview={overview}
-          userSettings={userSettings}
-          exchangeRate={exchangeRate}
         />
       </div>
 
@@ -135,8 +125,6 @@ function Overview({ userSettings, exchangeRate }: OverviewProps) {
         <TransactionByCategories
           loading={loading}
           types={types}
-          userSettings={userSettings}
-          exchangeRate={exchangeRate}
         />
       </div>
 
@@ -152,8 +140,6 @@ function Overview({ userSettings, exchangeRate }: OverviewProps) {
             typeGroups={typeGroups}
             cateGroups={cateGroups}
             loading={loading}
-            userSettings={userSettings}
-            exchangeRate={exchangeRate}
           />
         ) : (
           <HistorySkeleton />
