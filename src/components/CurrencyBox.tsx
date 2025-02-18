@@ -11,7 +11,7 @@ import { LuSearch } from 'react-icons/lu'
 
 function CurrencyBox() {
   return (
-    <div className="w-full rounded-lg border border-slate-200/30 bg-neutral-800/50 p-21">
+    <div className="relative w-full rounded-lg border border-slate-200/30 bg-neutral-800/50 p-21">
       <p className="font-bold">Currency</p>
       <p className="mb-3 text-sm text-slate-300">Set your default currency for transactions</p>
 
@@ -104,7 +104,7 @@ function CurrencySelection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute left-0 top-0 overflow-hidden rounded-md bg-neutral-950"
+            className="absolute left-0 top-0 z-20 overflow-hidden rounded-md bg-neutral-950"
           >
             <div className="flex h-10 items-center border-b border-slate-200/30">
               <div className="flex h-8 w-10 items-center justify-center">

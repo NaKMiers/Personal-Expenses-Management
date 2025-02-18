@@ -71,7 +71,10 @@ export async function GET(req: NextRequest) {
 
     // MARK: Types
     // group transaction by type
-    const types: any = {}
+    const types: any = {
+      income: [],
+      expense: [],
+    }
 
     transactions.forEach((transaction: any) => {
       const { type } = transaction
@@ -124,6 +127,9 @@ export async function GET(req: NextRequest) {
     // }
 
     // MARK: CHART
+
+    console.log('types:', types)
+    console.log('typeGroups:', typeGroups)
 
     // return response
     return NextResponse.json({ overview, types, typeGroups, message: '' }, { status: 200 })

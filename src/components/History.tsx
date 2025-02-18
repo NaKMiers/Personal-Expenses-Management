@@ -36,9 +36,11 @@ function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryPr
 
   // values
   const charts: ChartType[] = ['Line', 'Bar', 'Area', 'Radar']
-  const maxKey = [...typeGroups.income, ...typeGroups.expense].reduce((max, transaction) =>
-    transaction.amount > max.amount ? transaction : max
-  ).type
+  const temp = [...typeGroups.income, ...typeGroups.expense]
+  const maxKey =
+    temp.length > 0
+      ? temp.reduce((max, transaction) => (transaction.amount > max.amount ? transaction : max)).type
+      : 'income'
 
   // auto update chart data
   useEffect(() => {
@@ -112,13 +114,13 @@ function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryPr
 
       // Calculate total value
       let totalIncomeTransactionValue = chunkIncomeTransactions.reduce(
-        (total: number, transaction: any) => total + transaction.amount,
+        (total: number, transaction: any) => total + (transaction.amount || 0),
         0
       )
 
       // Calculate total value
       let totalExpenseTransactionValue = chunkExpenseTransactions.reduce(
-        (total: number, transaction: any) => total + transaction.amount,
+        (total: number, transaction: any) => total + (transaction.amount || 0),
         0
       )
 

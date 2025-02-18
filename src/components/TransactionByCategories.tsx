@@ -49,35 +49,41 @@ interface CategoryProps {
 }
 
 function Category({ label, categories, currency, rate, color }: CategoryProps) {
-  const allTotal = categories.reduce((acc, { total }) => acc + total, 0)
+  const allTotal = categories.reduce((acc, category) => acc + (category.total || 0), 0)
 
   return (
     <div className="rounded-md border border-slate-200/30 bg-neutral-800/30 p-21">
       <p className="font-body text-lg font-bold uppercase tracking-wider text-neutral-500">{label}</p>
 
       <div className="mt-6 flex flex-col gap-3 md:mt-8">
-        {categories.map(({ category, total }) => (
-          <div key={category._id}>
-            <div className="flex justify-between gap-2">
-              <p className="text-sm font-semibold text-neutral-400">
-                <span>{category.icon}</span>{' '}
-                <span>
-                  {category.name} ({((total / allTotal) * 100).toFixed(0)}% )
-                </span>
-              </p>
+        {categories.length ? (
+          categories.map(({ category, total }) => (
+            <div key={category._id}>
+              <div className="flex justify-between gap-2">
+                <p className="text-sm font-semibold text-neutral-400">
+                  <span>{category.icon}</span>{' '}
+                  <span>
+                    {category.name} ({((total / allTotal) * 100).toFixed(0)}% )
+                  </span>
+                </p>
 
-              <p className="text-sm font-semibold text-neutral-400">
-                {formatCurrency(currency, total, rate)}
-              </p>
+                <p className="text-sm font-semibold text-neutral-400">
+                  {formatCurrency(currency, total, rate)}
+                </p>
+              </div>
+
+              <Progress
+                value={(total / allTotal) * 100}
+                className="mt-2 bg-neutral-700"
+                indicator={color}
+              />
             </div>
-
-            <Progress
-              value={(total / allTotal) * 100}
-              className="mt-2 bg-neutral-700"
-              indicator={color}
-            />
+          ))
+        ) : (
+          <div className="flex items-center justify-center border-t border-slate-200/30 px-21 pt-21/2 text-xl font-bold text-neutral-500">
+            No Category Found
           </div>
-        ))}
+        )}
       </div>
     </div>
   )
