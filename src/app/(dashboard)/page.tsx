@@ -4,10 +4,16 @@ import CreateTransactionDialog from '@/components/CreateTransactionDialog copy'
 import Overview from '@/components/Overview'
 import { useAppSelector } from '@/hooks'
 import { useUser } from '@clerk/nextjs'
+import { FaPiggyBank } from 'react-icons/fa'
 
 function DashboardPage() {
   // hooks
   const { user } = useUser()
+
+  const toBudget = () =>{
+
+  } ;
+
 
   return (
     <div>
@@ -33,6 +39,11 @@ function DashboardPage() {
                 </button>
               }
             />
+
+            <button onClick={toBudget} className="flex items-center gap-[5px] trans-200 h-8 rounded-md border-2 border-yellow-300 bg-amber-800 px-2 text-xs font-semibold hover:bg-amber-700">
+              Budget <span className="mb-[2px]"><FaPiggyBank /></span>
+            </button>
+
           </div>
         </div>
       </div>
