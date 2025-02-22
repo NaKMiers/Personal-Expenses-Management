@@ -3,7 +3,7 @@
 import CategoryPicker from '@/components/CategoryPicker'
 import { useAppSelector } from '@/hooks'
 import { currencies } from '@/lib/currencies'
-import { toUTC } from '@/lib/utils'
+import { formatCurrency, toUTC } from '@/lib/utils'
 import { IFullTransaction } from '@/models/TransactionModel'
 import { editTransactionApi } from '@/requests'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -31,6 +31,9 @@ function EditTransactionDialog({
   update,
   className = '',
 }: EditTransactionDialogProps) {
+  // store
+  const { userSettings, exchangeRate } = useAppSelector(state => state.settings)
+
   const {
     register,
     handleSubmit,
@@ -44,7 +47,7 @@ function EditTransactionDialog({
     defaultValues: {
       description: transaction.description || '',
       category: transaction.category || '',
-      amount: transaction.amount || '',
+      amount: formatCurrency(userSettings.currency, transaction.amount, exchangeRate, false) || 0,
       date: transaction.date || new Date(),
       type: transaction.type || 'expense',
     },
@@ -53,8 +56,6 @@ function EditTransactionDialog({
   const form = watch()
   const [open, setOpen] = useState<boolean>(false)
   const [saving, setSaving] = useState<boolean>(false)
-
-  const { userSettings, exchangeRate } = useAppSelector(state => state.settings)
 
   // validate form
   const handleValidate: SubmitHandler<FieldValues> = useCallback(

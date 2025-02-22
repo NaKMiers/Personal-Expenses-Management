@@ -1,6 +1,6 @@
 'use client'
 
-import CreateTransactionDialog from '@/components/CreateTransactionDialog copy'
+import CreateTransactionDialog from '@/components/CreateTransactionDialog'
 import Overview from '@/components/Overview'
 import { useUser } from '@clerk/nextjs'
 
