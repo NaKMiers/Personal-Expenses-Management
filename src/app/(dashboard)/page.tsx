@@ -3,10 +3,12 @@
 import CreateTransactionDialog from '@/components/CreateTransactionDialog'
 import Overview from '@/components/Overview'
 import { useUser } from '@clerk/nextjs'
+import { useRouter } from 'next/navigation'
 
 function DashboardPage() {
   // hooks
   const { user } = useUser()
+  const router = useRouter()
 
   return (
     <div>
@@ -22,6 +24,7 @@ function DashboardPage() {
                   New Income 🤑
                 </button>
               }
+              refresh={() => router.refresh()}
             />
 
             <CreateTransactionDialog
@@ -31,6 +34,7 @@ function DashboardPage() {
                   New Expense 😕
                 </button>
               }
+              refresh={() => router.refresh()}
             />
           </div>
         </div>

@@ -21,10 +21,16 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 interface CreateTransactionDialogProps {
   trigger: ReactNode
   type: TransactionType
+  refresh?: () => void
   className?: string
 }
 
-function CreateTransactionDialog({ trigger, type, className = '' }: CreateTransactionDialogProps) {
+function CreateTransactionDialog({
+  trigger,
+  type,
+  refresh,
+  className = '',
+}: CreateTransactionDialogProps) {
   const {
     register,
     handleSubmit,
@@ -115,6 +121,10 @@ function CreateTransactionDialog({ trigger, type, className = '' }: CreateTransa
         toast.success(message, { id: 'create-transaction' })
         setOpen(false)
         reset()
+
+        if (refresh) {
+          refresh()
+        }
       } catch (err: any) {
         toast.error('Failed to create transaction', { id: 'create-transaction' })
         console.log(err)
@@ -123,7 +133,7 @@ function CreateTransactionDialog({ trigger, type, className = '' }: CreateTransa
         setSaving(false)
       }
     },
-    [reset, handleValidate, exchangeRate]
+    [reset, refresh, handleValidate, exchangeRate]
   )
   return (
     <div className={`relative ${className}`}>
