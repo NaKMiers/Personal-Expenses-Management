@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { LuX } from 'react-icons/lu'
+import { LuCalendar, LuX } from 'react-icons/lu'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import moment from 'moment/moment'
 
 interface Budget {
   id: string;
@@ -55,60 +58,106 @@ const BudgetOfCategories = () => {
   };
 
   const handleClose = () => {
-    setIsOpen(false); // Đóng modal khi nhấn nút Close
+    setIsOpen(false);
   };
 
-  if (!isOpen) return null; // Nếu isOpen là false, không render modal
+  const handleBackgroundClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      handleClose();
+    }
+  };
+
+  if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-neutral-950 bg-opacity-50 z-50">
-      <div className="relative max-w-2xl w-full p-6 bg-neutral-950 text-white rounded-lg shadow-lg border-[0.5px] border-slate-200/30">
-        <h2 className="text-2xl font-bold mb-4">Quản lý Ngân Sách</h2>
+    <div
+      className="fixed inset-0 flex items-center justify-center bg-neutral-950 bg-opacity-50 z-50">
+      <div className="relative max-w-2xl w-full p-6 bg-neutral-950 text-white rounded-lg shadow-lg border-[0.5px] border-slate-200/30"
+           onClick={handleBackgroundClick}>
+        <h2 className="text-sm font-bold mb-4">Create a new <span className="text-yellow-500">budget</span> of categories</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+          <div className="text-xs font-bold text-white mt-1">
+            Category
+          </div>
           <input
             type="text"
-            placeholder="Danh mục"
             value={formData.category}
             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
             required
             className="p-2 rounded bg-transparent border-[0.5px] border-slate-200/30 text-white"
           />
+
+          <div className="text-xs font-bold text-white mt-1">
+            Amount <span className="font-normal">(Budget)</span>
+          </div>
           <input
             type="number"
-            placeholder="Số tiền"
             value={formData.amount}
             onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
             required
             className="p-2 rounded bg-transparent border-[0.5px] border-slate-200/30 text-white"
           />
-          <input
-            type="number"
-            placeholder="Tháng"
-            value={formData.month}
-            onChange={(e) => setFormData({ ...formData, month: Number(e.target.value) })}
-            required
-            className="p-2 rounded bg-transparent border-[0.5px] border-slate-200/30 text-white"
-            min="1"
-            max="12"
-          />
-          <input
-            type="number"
-            placeholder="Năm"
-            value={formData.year}
-            onChange={(e) => setFormData({ ...formData, year: Number(e.target.value) })}
-            required
-            className="p-2 rounded bg-transparent border-[0.5px] border-slate-200/30 text-white"
-            min="2000"
-            max="2100"
-          />
-          <button type="submit" className="bg-white p-2 rounded hover:bg-gray-50 text-black">
-            {editingId ? 'Cập nhật' : 'Thêm'} ngân sách
+
+          <div className="flex">
+            <div className="text-xs font-bold text-white mt-1 mr-[150] xs:mr-[240] sm:mr-[260] lg:mr-[260]">
+              Start day
+            </div>
+
+            <div className="text-xs font-bold text-white mt-1">
+              Finish day
+            </div>
+          </div>
+
+          <div className="flex space-x-3">
+
+            <Popover>
+              <PopoverTrigger className="w-full">
+                <button className="flex h-9 w-full items-center justify-between gap-2 rounded-md border border-slate-200/30 bg-neutral-950 px-21/2 text-start text-sm font-semibold">
+                  {moment().format('MMM DD, YYYY')}
+                  <LuCalendar size={18} />
+                </button>
+              </PopoverTrigger>
+
+              <PopoverContent className="w-full overflow-hidden rounded-md p-0 outline-none">
+                <Calendar
+                  className="bg-neutral-900"
+                  mode="single"
+                  onSelect={date => {
+                  }}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+
+            <Popover>
+              <PopoverTrigger className="w-full">
+                <button className="flex h-9 w-full items-center justify-between gap-2 rounded-md border border-slate-200/30 bg-neutral-950 px-21/2 text-start text-sm font-semibold">
+                  {moment().format('MMM DD, YYYY')}
+                  <LuCalendar size={18} />
+                </button>
+              </PopoverTrigger>
+
+              <PopoverContent className="w-full overflow-hidden rounded-md p-0 outline-none">
+                <Calendar
+                  className="bg-neutral-900"
+                  mode="single"
+                  onSelect={date => {
+                  }}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+
+          </div>
+
+          <button type="submit" className="mt-4 bg-white font-medium p-2 rounded hover:bg-gray-50 text-black">
+            {editingId ? 'Update' : 'Add'} budget
           </button>
         </form>
 
         <div className="mt-6">
-          <h3 className="text-xl font-semibold mb-2">Danh sách Ngân Sách</h3>
-          {budgets.length === 0 ? <p>Chưa có ngân sách nào</p> :
+          <h3 className="text-sm font-bold mb-2">Danh sách Ngân Sách</h3>
+          {budgets.length === 0 ? <p className="text-xs">Chưa có ngân sách nào</p> :
             budgets.map(budget => (
               <div key={budget.id} className="flex justify-between items-center p-3 bg-gray-700 rounded mt-2">
                 <span>{budget.category} - {budget.amount.toLocaleString()} VND - Tháng {budget.month}/{budget.year}</span>
