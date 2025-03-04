@@ -5,14 +5,17 @@ import Overview from '@/components/Overview'
 import { useAppSelector } from '@/hooks'
 import { useUser } from '@clerk/nextjs'
 import { FaPiggyBank } from 'react-icons/fa'
+import { useState } from 'react'
+import BudgetOfCategories from '@/components/BudgetOfCategories'
 
 function DashboardPage() {
   // hooks
   const { user } = useUser()
+  const [isBudgetVisible, setIsBudgetVisible] = useState(false)
 
-  const toBudget = () =>{
-
-  } ;
+  const toBudget = () => {
+    setIsBudgetVisible(!isBudgetVisible)
+  };
 
 
   return (
@@ -51,6 +54,8 @@ function DashboardPage() {
       <div className="container">
         <Overview />
       </div>
+
+      {isBudgetVisible && <BudgetOfCategories />}
 
       <div className="pt-80" />
     </div>
