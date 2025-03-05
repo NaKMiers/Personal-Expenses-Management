@@ -5,44 +5,41 @@ const Schema = mongoose.Schema
 
 const BudgetSchema = new Schema(
   {
-    name: {
+    type: {
       type: String,
+      enum: ['income', 'expense'],
+      required: true,
+    },
+    categoryId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'category',
       required: true,
     },
     userId: {
       type: String,
       index: true,
-    },
-    categoryId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Category',
       required: true,
     },
     amount: {
       type: Number,
       required: true,
     },
-    month: {
-      type: Number,
+    startDate: {
+      type: Date,
       required: true,
     },
-    year: {
-      type: Number,
+    endDate: {
+      type: Date,
       required: true,
-    },
-    icon: {
-      type: String,
-    },
-    type: {
-      type: String,
-      enum: ['income', 'expense'],
-      required: true,
-    },
+    }
   },
   { timestamps: true }
 )
 
-BudgetSchema.index({ userId: 1, categoryId: 1, month: 1, year: 1 }, { unique: true })
+BudgetSchema.index(
+  { userId: 1, type: 1, categoryId: 1, startDate: 1, endDate: 1 },
+  { unique: true }
+)
 
 const BudgetModel = mongoose.models.budget || mongoose.model('budget', BudgetSchema)
 export default BudgetModel
@@ -52,12 +49,10 @@ export interface IBudget {
   createdAt: string
   updatedAt: string
 
-  name: string
-  userId: string
-  categoryId: string
-  amount: number
-  month: number
-  year: number
-  icon: string
   type: ITransactionType
+  categoryId: string
+  userId: string
+  amount: number
+  startDate: string
+  endDate: string
 }
