@@ -14,20 +14,7 @@ function RootProviders({ children }: { children: ReactNode }) {
     storeRef.current = makeStore()
   }
 
-  return (
-    <QueryClientProvider client={queryClient}>
-      {/* <ThemeProvider
-        attribute="class"
-        defaultTheme="dark"
-        enableSystem
-        disableTransitionOnChange
-      >
-      </ThemeProvider> */}
-
-      <Provider store={storeRef.current}>{children}</Provider>
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
-  )
+  return <Provider store={storeRef.current}>{children}</Provider>
 }
 
 export default RootProviders
