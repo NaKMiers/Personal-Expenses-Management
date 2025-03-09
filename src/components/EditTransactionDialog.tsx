@@ -5,6 +5,7 @@ import { useAppSelector } from '@/hooks'
 import { currencies } from '@/lib/currencies'
 import { formatCurrency } from '@/lib/utils'
 import { transactionMediator } from '@/patterns/mediators/TransactionMediator'
+import Category from '@/patterns/prototypes/CategoryPrototype'
 import Transaction from '@/patterns/prototypes/TransactionPrototype'
 import { AnimatePresence, motion } from 'framer-motion'
 import moment from 'moment'
@@ -171,7 +172,7 @@ function EditTransactionDialog({
                     <p className="mb-2 font-semibold">Category</p>
                     <div onFocus={() => clearErrors('category')}>
                       <CategoryPicker
-                        initCategory={transaction.category}
+                        initCategory={transaction.category as Category}
                         onChange={(category: string) => setValue('category', category)}
                         type={form.type}
                       />
