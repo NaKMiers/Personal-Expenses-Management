@@ -54,7 +54,7 @@ function CreateTransactionDialog({
   const [open, setOpen] = useState<boolean>(false)
   const [saving, setSaving] = useState<boolean>(false)
 
-  const { userSettings, exchangeRate } = useAppSelector(state => state.settings)
+  const { userSettings } = useAppSelector(state => state.settings)
 
   // validate form
   const handleValidate: SubmitHandler<FieldValues> = useCallback(
@@ -116,7 +116,7 @@ function CreateTransactionDialog({
         const { transaction, message } = await createTransactionApi({
           ...data,
           date: toUTC(data.date),
-          amount: data.amount / exchangeRate,
+          amount: data.amount,
         })
         toast.success(message, { id: 'create-transaction' })
         setOpen(false)
@@ -133,7 +133,7 @@ function CreateTransactionDialog({
         setSaving(false)
       }
     },
-    [reset, refresh, handleValidate, exchangeRate]
+    [reset, refresh, handleValidate]
   )
   return (
     <div className={`relative ${className}`}>

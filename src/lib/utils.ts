@@ -15,17 +15,12 @@ export function cn(...inputs: ClassValue[]) {
 export const formatSymbol = (currency: string): string =>
   currencies.find(c => c.value === currency)?.symbol || ''
 
-export const formatCurrency = (
-  currency: string,
-  amount: number,
-  rate: number,
-  isSymbol: boolean = true
-): string => {
+export const formatCurrency = (currency: string, amount: number, isSymbol: boolean = true): string => {
   let result = ''
   if (isSymbol) {
     result += formatSymbol(currency) + ' '
   }
-  result += (amount * rate).toFixed(2)
+  result += amount.toFixed(2)
   return result
 }
 

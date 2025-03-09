@@ -32,7 +32,7 @@ function EditTransactionDialog({
   className = '',
 }: EditTransactionDialogProps) {
   // store
-  const { userSettings, exchangeRate } = useAppSelector(state => state.settings)
+  const { userSettings } = useAppSelector(state => state.settings)
 
   const {
     register,
@@ -47,7 +47,7 @@ function EditTransactionDialog({
     defaultValues: {
       description: transaction.description || '',
       category: transaction.category || '',
-      amount: formatCurrency(userSettings.currency, transaction.amount, exchangeRate, false) || 0,
+      amount: formatCurrency(userSettings.currency, transaction.amount, false) || 0,
       date: transaction.date || new Date(),
       type: transaction.type || 'expense',
     },
@@ -117,7 +117,7 @@ function EditTransactionDialog({
         const { updatedTransaction, message } = await editTransactionApi(transaction._id, {
           ...data,
           date: toUTC(data.date),
-          amount: data.amount / exchangeRate,
+          amount: data.amount,
         })
         toast.success(message, { id: 'update-transaction' })
         update(updatedTransaction)
@@ -130,7 +130,7 @@ function EditTransactionDialog({
         setSaving(false)
       }
     },
-    [handleValidate, update, exchangeRate, transaction]
+    [handleValidate, update, transaction]
   )
   return (
     <div className={`relative ${className}`}>

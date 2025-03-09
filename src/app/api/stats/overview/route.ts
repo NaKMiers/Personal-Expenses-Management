@@ -119,18 +119,6 @@ export async function GET(req: NextRequest) {
       types[type] = categoryGroupsArray
     }
 
-    // type: {
-    //   [key: string]: {
-    //     category: ICategory
-    //     total: number
-    //   }[]
-    // }
-
-    // MARK: CHART
-
-    console.log('types:', types)
-    console.log('typeGroups:', typeGroups)
-
     // return response
     return NextResponse.json({ overview, types, typeGroups, message: '' }, { status: 200 })
   } catch (err: any) {

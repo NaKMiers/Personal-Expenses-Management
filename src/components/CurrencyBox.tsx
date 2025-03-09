@@ -25,7 +25,7 @@ export default CurrencyBox
 function CurrencySelection() {
   // hooks
   const dispatch = useAppDispatch()
-  const { userSettings, exchangeRate } = useAppSelector(state => state.settings)
+  const { userSettings } = useAppSelector(state => state.settings)
 
   // states
   const [open, setOpen] = useState<boolean>(false)

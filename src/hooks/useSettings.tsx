@@ -1,6 +1,6 @@
 'use client'
 
-import { setExchangeRate, setExchangeRates, setUserSettings } from '@/reducers/settingsReducer'
+import { setUserSettings } from '@/reducers/settingsReducer'
 import { getUserSettingsApi } from '@/requests'
 import { useUser } from '@clerk/nextjs'
 import { redirect } from 'next/navigation'
@@ -35,26 +35,6 @@ function UseSettings() {
     }
     getUserSettings()
   }, [dispatch, settings.userSettings.userId, user])
-
-  useEffect(() => {
-    const getExchangeRates = async () => {
-      if (!settings.userSettings.currency) return
-
-      try {
-        // get exchange rate for user's currency in real-time
-        const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD', {
-          next: { revalidate: 10 },
-        })
-        const data = await res.json()
-
-        dispatch(setExchangeRates(data.rates))
-        dispatch(setExchangeRate(data.rates[settings.userSettings.currency]))
-      } catch (err: any) {
-        console.log(err)
-      }
-    }
-    getExchangeRates()
-  }, [dispatch, settings.userSettings])
 
   return null
 }

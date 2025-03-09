@@ -19,7 +19,7 @@ interface HistoryProps {
 
 function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryProps) {
   // store
-  const { userSettings, exchangeRate } = useAppSelector(state => state.settings)
+  const { userSettings } = useAppSelector(state => state.settings)
 
   // states
   const incomeCates = cateGroups.income
@@ -44,7 +44,7 @@ function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryPr
 
   // auto update chart data
   useEffect(() => {
-    if (!typeGroups || !userSettings || !exchangeRate) return
+    if (!typeGroups || !userSettings) return
 
     // filter transactions
     let filteredIncomeTransactions = typeGroups.income
@@ -152,7 +152,7 @@ function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryPr
     }
 
     setData(groupedData)
-  }, [from, to, typeGroups, exchangeRate, userSettings, selectedIncomeCates, selectedExpenseCates])
+  }, [from, to, typeGroups, userSettings, selectedIncomeCates, selectedExpenseCates])
 
   return (
     <div className={cn('rounded-lg border border-slate-200/30 bg-neutral-800/30', className)}>
@@ -223,7 +223,6 @@ function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryPr
         chart={chart}
         data={data}
         userSettings={userSettings}
-        exchangeRate={exchangeRate}
         className="-ml-21 pr-21/2"
       />
     </div>

@@ -4,10 +4,8 @@ class DatabaseManager {
   private static instance: DatabaseManager | null = null
   private connection: mongoose.Connection | null = null
 
-  // Private constructor to prevent direct construction calls with 'new'
   private constructor() {}
 
-  // Static method to access the singleton instance
   public static getInstance(): DatabaseManager {
     if (!DatabaseManager.instance) {
       DatabaseManager.instance = new DatabaseManager()
@@ -15,7 +13,6 @@ class DatabaseManager {
     return DatabaseManager.instance
   }
 
-  // Connect to the database
   public async connect(): Promise<mongoose.Connection> {
     if (this.connection) {
       console.log('Returning cached database connection')
@@ -30,19 +27,18 @@ class DatabaseManager {
         console.log('MongoDB connected successfully')
       })
 
-      this.connection.on('error', error => {
-        console.log('MongoDB connection error. Please make sure MongoDB is running. ' + error)
+      this.connection.on('error', err => {
+        console.log('MongoDB connection error:', err)
       })
 
       return this.connection
-    } catch (error) {
+    } catch (err: any) {
       console.log('Something goes wrong!')
-      console.log(error)
+      console.log(err)
       throw new Error('Unable to connect to database')
     }
   }
 
-  // Disconnect from the database
   public async disconnect(): Promise<void> {
     if (this.connection) {
       await mongoose.disconnect()
@@ -52,7 +48,7 @@ class DatabaseManager {
   }
 }
 
-export async function connectDatabase() {
+export async function connectDatabase(): Promise<mongoose.Connection> {
   return await DatabaseManager.getInstance().connect()
 }
 

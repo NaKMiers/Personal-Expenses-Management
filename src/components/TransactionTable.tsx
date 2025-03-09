@@ -2,24 +2,24 @@ import { useAppSelector } from '@/hooks'
 import { TransactionType } from '@/lib/types'
 import { formatCurrency } from '@/lib/utils'
 import { IFullTransaction } from '@/models/TransactionModel'
+import { deleteTransactionsApi } from '@/requests'
 import { Separator } from '@radix-ui/react-select'
 import moment from 'moment'
 import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react'
-import { LuChevronDown, LuChevronUp, LuMinus, LuPen, LuSearch, LuTrash } from 'react-icons/lu'
+import toast from 'react-hot-toast'
+import { LuChevronDown, LuChevronUp, LuPen, LuSearch, LuTrash } from 'react-icons/lu'
 import ConfirmDialog from './ConfirmDialog'
+import EditTransactionDialog from './EditTransactionDialog'
 import { MultipleSelection } from './History'
 import { Checkbox } from './ui/checkbox'
 import { Switch } from './ui/switch'
-import { deleteTransactionsApi } from '@/requests'
-import toast from 'react-hot-toast'
-import EditTransactionDialog from './EditTransactionDialog'
 
 interface ITransactionTableProps {
   data: IFullTransaction[]
 }
 function TransactionTable({ data: transactions }: ITransactionTableProps) {
   // store
-  const { userSettings, exchangeRate } = useAppSelector(state => state.settings)
+  const { userSettings } = useAppSelector(state => state.settings)
 
   // values
   const columns = ['category', 'description', 'date', 'amount']
@@ -70,13 +70,13 @@ function TransactionTable({ data: transactions }: ITransactionTableProps) {
         if (selectedColumns.includes('category')) text += `${name} ${icon}`
         if (selectedColumns.includes('description')) text += ` ${description}`
         if (selectedColumns.includes('amount'))
-          text += ` ${formatCurrency(userSettings.currency, amount, exchangeRate)}`
+          text += ` ${formatCurrency(userSettings.currency, amount)}`
         return text.toLowerCase().includes(filterText.toLowerCase())
       })
     }
 
     setFilteredData(newData)
-  }, [data, sort, filterText, exchangeRate, userSettings.currency, selectedColumns])
+  }, [data, sort, filterText, userSettings.currency, selectedColumns])
 
   // delete transaction
   const handleDeleteTransactions = useCallback(async (ids: string[]) => {
@@ -405,7 +405,7 @@ function Row({
   selectedTransactions,
 }: RowProps) {
   // store
-  const { userSettings, exchangeRate } = useAppSelector(state => state.settings)
+  const { userSettings } = useAppSelector(state => state.settings)
 
   // states
   const [data, setData] = useState<IFullTransaction>(transaction)
@@ -450,7 +450,7 @@ function Row({
       {columns.includes('amount') && (
         <div className="is flex w-[150px] flex-shrink-0 items-center gap-1">
           <p className="line-clamp-2 overflow-hidden text-ellipsis text-nowrap">
-            {formatCurrency(userSettings.currency, data.amount, exchangeRate)}
+            {formatCurrency(userSettings.currency, data.amount)}
           </p>
         </div>
       )}
@@ -495,7 +495,7 @@ interface FooterRowProps {
 }
 function FooterRow({ data, columns, type }: FooterRowProps) {
   // store
-  const { userSettings, exchangeRate } = useAppSelector(state => state.settings)
+  const { userSettings } = useAppSelector(state => state.settings)
 
   return (
     <div
@@ -522,8 +522,7 @@ function FooterRow({ data, columns, type }: FooterRowProps) {
           <p className="line-clamp-2 overflow-hidden text-ellipsis">
             {formatCurrency(
               userSettings.currency,
-              data.reduce((total, item) => total + item.amount, 0),
-              exchangeRate
+              data.reduce((total, item) => total + item.amount, 0)
             )}
           </p>
         </div>

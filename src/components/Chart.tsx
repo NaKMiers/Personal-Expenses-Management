@@ -40,25 +40,16 @@ interface ChartProps {
   data: any[]
   className?: string
   userSettings: any
-  exchangeRate: number
 }
 
 const COLORS = ['#111', '#01dbe5', '#ff6347', '#ffa500', '#8a2be2']
-function Chart({
-  shows,
-  chart,
-  data = [],
-  maxKey,
-  userSettings,
-  exchangeRate,
-  className = '',
-}: ChartProps) {
+function Chart({ shows, chart, data = [], maxKey, userSettings, className = '' }: ChartProps) {
   const formatTooltip = useCallback(
     (value: number, name: string) => {
-      const formattedValue = formatCurrency(userSettings.currency, value as number, exchangeRate)
+      const formattedValue = formatCurrency(userSettings.currency, value as number)
       return [`${capitalize(name as string)}: ${formattedValue}`]
     },
-    [userSettings, exchangeRate]
+    [userSettings]
   )
 
   return (

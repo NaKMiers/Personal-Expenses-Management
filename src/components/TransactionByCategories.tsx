@@ -10,7 +10,7 @@ interface TransactionByCategoriesProps {
 
 function TransactionByCategories({ loading, types, className = '' }: TransactionByCategoriesProps) {
   // store
-  const { userSettings, exchangeRate } = useAppSelector(state => state.settings)
+  const { userSettings } = useAppSelector(state => state.settings)
 
   return (
     <div className={`grid grid-cols-1 gap-21/2 md:grid-cols-2 ${className}`}>
@@ -19,7 +19,6 @@ function TransactionByCategories({ loading, types, className = '' }: Transaction
           label="Incomes by category"
           categories={types.income}
           currency={userSettings?.currency}
-          rate={exchangeRate}
           color="bg-emerald-500"
         />
       ) : (
@@ -30,7 +29,6 @@ function TransactionByCategories({ loading, types, className = '' }: Transaction
           label="Expenses by category"
           categories={types.expense}
           currency={userSettings?.currency}
-          rate={exchangeRate}
           color="bg-rose-500"
         />
       ) : (
@@ -43,12 +41,11 @@ function TransactionByCategories({ loading, types, className = '' }: Transaction
 interface CategoryProps {
   label: string
   currency: string
-  rate: number
   categories: any[]
   color: string
 }
 
-function Category({ label, categories, currency, rate, color }: CategoryProps) {
+function Category({ label, categories, currency, color }: CategoryProps) {
   const allTotal = categories.reduce((acc, category) => acc + (category.total || 0), 0)
 
   return (
@@ -68,7 +65,7 @@ function Category({ label, categories, currency, rate, color }: CategoryProps) {
                 </p>
 
                 <p className="text-sm font-semibold text-neutral-400">
-                  {formatCurrency(currency, total, rate)}
+                  {formatCurrency(currency, total)}
                 </p>
               </div>
 

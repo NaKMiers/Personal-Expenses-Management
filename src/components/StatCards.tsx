@@ -13,7 +13,7 @@ interface StatCardsProps {
 
 function StatCards({ loading, overview = null, className = '' }: StatCardsProps) {
   // store
-  const { userSettings, exchangeRate } = useAppSelector(state => state.settings)
+  const { userSettings } = useAppSelector(state => state.settings)
 
   return (
     <div className={`grid grid-cols-1 gap-21/2 md:grid-cols-3 md:gap-21 ${className}`}>
@@ -25,7 +25,7 @@ function StatCards({ loading, overview = null, className = '' }: StatCardsProps)
             </div>
           }
           title="Income"
-          value={exchangeRate * (overview.income || 0)}
+          value={overview.income || 0}
           currency={userSettings?.currency || 'USD'}
         />
       ) : (
@@ -40,7 +40,7 @@ function StatCards({ loading, overview = null, className = '' }: StatCardsProps)
             </div>
           }
           title="Expense"
-          value={exchangeRate * (overview.expense || 0)}
+          value={overview.expense || 0}
           currency={userSettings?.currency || 'USD'}
         />
       ) : (
@@ -55,7 +55,7 @@ function StatCards({ loading, overview = null, className = '' }: StatCardsProps)
             </div>
           }
           title="Balance"
-          value={exchangeRate * (overview.balance || 0)}
+          value={overview.balance || 0}
           currency={userSettings?.currency || 'USD'}
         />
       ) : (
