@@ -1,7 +1,7 @@
 import { toUTC } from '@/lib/utils'
 import { ITransactionType } from '@/models/TransactionModel'
-import { createTransactionApi } from '@/requests'
 import toast from 'react-hot-toast'
+import { TransactionApis } from '../proxies/TransactionApiProxy'
 import Category from './CategoryPrototype'
 
 class Transaction {
@@ -41,7 +41,7 @@ class Transaction {
   async clone() {
     toast.loading('Duplicate transaction...', { id: 'duplicate-transaction' })
     try {
-      await createTransactionApi({
+      await TransactionApis.createTransactionApi({
         amount: this.amount,
         description: this.description + ' (copy)',
         type: this.type,

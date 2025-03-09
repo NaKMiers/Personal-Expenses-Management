@@ -1,8 +1,8 @@
 import { toUTC } from '@/lib/utils'
-import { createTransactionApi, editTransactionApi } from '@/requests'
 import { FieldValues } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import Transaction from '../prototypes/TransactionPrototype'
+import { TransactionApis } from '../proxies/TransactionApiProxy'
 import { IMediator } from './IMediator'
 
 interface TransactionMediator extends IMediator {
@@ -22,7 +22,7 @@ class ConcreteTransactionMediator implements TransactionMediator {
   async create(data: FieldValues, refresh?: () => void): Promise<void> {
     toast.loading('Creating transaction...', { id: 'create-transaction' })
     try {
-      const { message } = await createTransactionApi({
+      const { message } = await TransactionApis.createTransactionApi({
         ...data,
         date: toUTC(data.date),
         amount: data.amount,
@@ -43,7 +43,7 @@ class ConcreteTransactionMediator implements TransactionMediator {
   ): Promise<void> {
     toast.loading('Updating transaction...', { id: 'update-transaction' })
     try {
-      const { updatedTransaction, message } = await editTransactionApi(transactionId, {
+      const { updatedTransaction, message } = await TransactionApis.editTransactionApi(transactionId, {
         ...data,
         date: toUTC(data.date),
         amount: data.amount,

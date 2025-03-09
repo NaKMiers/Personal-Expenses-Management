@@ -2,7 +2,7 @@
 
 import { TransactionType } from '@/lib/types'
 import Category from '@/patterns/prototypes/CategoryPrototype'
-import { deleteCategoryApi, getUserCategoriesApi } from '@/requests/categoryRequests'
+import { CategoryApis } from '@/patterns/proxies/CategoryApiProxy'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -35,7 +35,7 @@ function CategoryPicker({ type, onChange, initCategory, className = '' }: Catego
     setGetting(true)
 
     try {
-      const { categories } = await getUserCategoriesApi(type)
+      const { categories } = await CategoryApis.getUserCategoriesApi(type, { noCache: true })
       const data: Category[] = []
       for (const category of categories) {
         const c = new Category(
@@ -92,7 +92,7 @@ function CategoryPicker({ type, onChange, initCategory, className = '' }: Catego
       setDeleting(id)
 
       try {
-        const { deletedCategory, message } = await deleteCategoryApi(id)
+        const { deletedCategory, message } = await CategoryApis.deleteCategoryApi(id)
 
         setCategories(categories.filter(category => category._id !== deletedCategory._id))
         setFilteredCategories(

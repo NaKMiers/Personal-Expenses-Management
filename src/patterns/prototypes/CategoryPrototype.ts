@@ -1,6 +1,6 @@
 import { ITransactionType } from '@/models/TransactionModel'
-import { createCategoryApi } from '@/requests'
 import toast from 'react-hot-toast'
+import { CategoryApis } from '../proxies/CategoryApiProxy'
 import { IPrototype } from './IPrototype'
 
 class Category implements IPrototype {
@@ -35,7 +35,7 @@ class Category implements IPrototype {
     toast.loading('Duplicate category...', { id: 'duplicate-category' })
 
     try {
-      await createCategoryApi({
+      await CategoryApis.createCategoryApi({
         name: this.name + ' (copy)',
         icon: this.icon,
         type: this.type,

@@ -2,8 +2,8 @@
 
 import { useAppDispatch, useAppSelector } from '@/hooks'
 import { currencies, CurrencyType } from '@/lib/currencies'
+import { UserSettingsApis } from '@/patterns/proxies/UserSettingsApiProxy'
 import { setUserSettings } from '@/reducers/settingsReducer'
-import { editUserSettingsApi } from '@/requests'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -63,7 +63,7 @@ function CurrencySelection() {
       })
 
       try {
-        const { updatedUserSettings } = await editUserSettingsApi(value)
+        const { updatedUserSettings } = await UserSettingsApis.editUserSettingsApi(value)
 
         setSelectedCurrency(currencies.find(c => c.value === updatedUserSettings.currency) || null)
         dispatch(setUserSettings(updatedUserSettings))

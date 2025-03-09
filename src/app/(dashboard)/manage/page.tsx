@@ -5,7 +5,7 @@ import CreateCategoryDialog from '@/components/CreateCategoryDialog'
 import CurrencyBox from '@/components/CurrencyBox'
 import { TransactionType } from '@/lib/types'
 import Category from '@/patterns/prototypes/CategoryPrototype'
-import { getUserCategoriesApi } from '@/requests'
+import { CategoryApis } from '@/patterns/proxies/CategoryApiProxy'
 import { LucidePlusSquare } from 'lucide-react'
 import { ReactNode, useCallback, useEffect, useState } from 'react'
 import { LuTrendingDown, LuTrendingUp } from 'react-icons/lu'
@@ -19,7 +19,7 @@ function ManagePage() {
     setLoading(true)
 
     try {
-      const { categories } = await getUserCategoriesApi()
+      const { categories } = await CategoryApis.getUserCategoriesApi(undefined, { noCache: true })
 
       const data: Category[] = []
       for (const category of categories) {

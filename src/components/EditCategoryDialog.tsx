@@ -60,7 +60,6 @@ function EditCategoryDialog({ trigger, category, update, className = '' }: EditC
       setSaving(true)
 
       try {
-        // const { updatedCategory, message } = await editCategoryApi(category._id, data)
         await categoryMediator.edit(category._id, data, update)
 
         setOpen(false)

@@ -1,7 +1,7 @@
 'use client'
 
+import { UserSettingsApis } from '@/patterns/proxies/UserSettingsApiProxy'
 import { setUserSettings } from '@/reducers/settingsReducer'
-import { getUserSettingsApi } from '@/requests'
 import { useUser } from '@clerk/nextjs'
 import { redirect } from 'next/navigation'
 import { useEffect } from 'react'
@@ -18,11 +18,9 @@ function UseSettings() {
 
       try {
         // get user settings
-        const { userSettings: uSettings } = await getUserSettingsApi(
-          user.id,
-          process.env.NEXT_PUBLIC_APP_URL,
-          { next: { revalidate: 10 } }
-        )
+        const { userSettings: uSettings } = await UserSettingsApis.getUserSettingsApi(user.id, {
+          prefix: process.env.NEXT_PUBLIC_APP_URL!,
+        })
 
         if (!uSettings) {
           redirect('/wizard')

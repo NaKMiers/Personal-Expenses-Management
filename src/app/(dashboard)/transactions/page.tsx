@@ -4,7 +4,7 @@ import TransactionTable, { SkeletonTransactionTable } from '@/components/Transac
 import { DateRangePicker } from '@/components/ui/DateRangePicker'
 import { toUTC } from '@/lib/utils'
 import Transaction from '@/patterns/prototypes/TransactionPrototype'
-import { getUserTransactionsApi } from '@/requests'
+import { TransactionApis } from '@/patterns/proxies/TransactionApiProxy'
 import { differenceInDays } from 'date-fns'
 import moment from 'moment'
 import { useCallback, useEffect, useState } from 'react'
@@ -25,7 +25,12 @@ function TransactionsPage() {
     setLoading(true)
 
     try {
-      const { transactions } = await getUserTransactionsApi(toUTC(dateRange.from), toUTC(dateRange.to))
+      const { transactions } = await TransactionApis.getUserTransactionsApi(
+        toUTC(dateRange.from),
+        toUTC(dateRange.to),
+        { noCache: true }
+      )
+
       const data: Transaction[] = []
       for (const tx of transactions) {
         const t = new Transaction(
@@ -99,9 +104,7 @@ function TransactionsPage() {
         {!loading ? (
           <TransactionTable
             data={transactions}
-            refresh={() =>
-              setDateRange({ from: moment().startOf('month').toDate(), to: moment().toDate() })
-            }
+            refresh={getUserTransactions}
           />
         ) : (
           <SkeletonTransactionTable />

@@ -114,19 +114,21 @@ function HeaderRow({
       )}
       <div className="flex flex-1 items-center justify-end">
         <div>
-          <ConfirmDialog
-            label="Delete category"
-            subLabel={`Are you sure you want to delete Salary category?`}
-            confirmLabel="Delete"
-            cancelLabel="Cancel"
-            onConfirm={() => handleDeleteTransactions(selectedTransactions)}
-            disabled={deleting.length > 0}
-            trigger={
-              <button className="trans-200 rounded-md p-1 hover:bg-slate-200/30">
-                <LuTrash size={16} />
-              </button>
-            }
-          />
+          {selectedTransactions.length > 0 && (
+            <ConfirmDialog
+              label="Delete category"
+              subLabel={`Are you sure you want to delete Salary category?`}
+              confirmLabel="Delete"
+              cancelLabel="Cancel"
+              onConfirm={() => handleDeleteTransactions(selectedTransactions)}
+              disabled={deleting.length > 0}
+              trigger={
+                <button className="trans-200 rounded-md p-1 hover:bg-slate-200/30">
+                  <LuTrash size={16} />
+                </button>
+              }
+            />
+          )}
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import ConfirmDialog from '@/components/ConfirmDialog'
 import EditCategoryDialog from '@/components/EditCategoryDialog'
 import Category from '@/patterns/prototypes/CategoryPrototype'
-import { deleteCategoryApi } from '@/requests'
+import { CategoryApis } from '@/patterns/proxies/CategoryApiProxy'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { LuCopy, LuLoader, LuPen, LuTrash } from 'react-icons/lu'
@@ -43,7 +43,7 @@ function CategoryItem({ category, refresh }: CategoryItemProps) {
       toast.loading('Deleting category...', { id: 'delete-category' })
 
       try {
-        const { message } = await deleteCategoryApi(id)
+        const { message } = await CategoryApis.deleteCategoryApi(id)
         toast.success(message, { id: 'delete-category' })
 
         refresh && refresh()

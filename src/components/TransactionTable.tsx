@@ -2,7 +2,7 @@ import { useAppSelector } from '@/hooks'
 import { formatCurrency } from '@/lib/utils'
 import Category from '@/patterns/prototypes/CategoryPrototype'
 import Transaction from '@/patterns/prototypes/TransactionPrototype'
-import { deleteTransactionsApi } from '@/requests'
+import { TransactionApis } from '@/patterns/proxies/TransactionApiProxy'
 import { Separator } from '@radix-ui/react-select'
 import moment from 'moment'
 import { useCallback, useEffect, useState } from 'react'
@@ -88,7 +88,7 @@ function TransactionTable({ data, refresh }: ITransactionTableProps) {
       toast.loading('Deleting transactions...', { id: 'delete-transactions' })
 
       try {
-        const { deletedTransactions, message } = await deleteTransactionsApi(ids)
+        const { message } = await TransactionApis.deleteTransactionsApi(ids)
 
         // update transactions
         setFilteredData(prevData => prevData.filter(item => !ids.includes(item._id)))
@@ -215,6 +215,7 @@ function TransactionTable({ data, refresh }: ITransactionTableProps) {
                     deleting={deleting}
                     setSelectedTransactions={setSelectedTransactions}
                     selectedTransactions={selectedTransactions}
+                    refresh={refresh}
                     key={item._id}
                   />
                 ))}

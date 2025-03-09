@@ -1,7 +1,7 @@
-import { createCategoryApi, editCategoryApi } from '@/requests'
 import { FieldValues } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import Category from '../prototypes/CategoryPrototype'
+import { CategoryApis } from '../proxies/CategoryApiProxy'
 import { IMediator } from './IMediator'
 
 interface CategoryMediator extends IMediator {
@@ -21,7 +21,7 @@ class ConcreteCategoryMediator implements CategoryMediator {
   ): Promise<void> {
     toast.loading('Creating category...', { id: 'create-category' })
     try {
-      const { category, message } = await createCategoryApi(data)
+      const { category, message } = await CategoryApis.createCategoryApi(data)
       toast.success(message, { id: 'create-category' })
       if (refresh) refresh()
       if (update) update(category)
@@ -39,7 +39,7 @@ class ConcreteCategoryMediator implements CategoryMediator {
   ): Promise<void> {
     toast.loading('Updating category...', { id: 'update-category' })
     try {
-      const { updatedCategory, message } = await editCategoryApi(categoryId, data)
+      const { updatedCategory, message } = await CategoryApis.editCategoryApi(categoryId, data)
 
       toast.success(message, { id: 'update-category' })
       update(updatedCategory)

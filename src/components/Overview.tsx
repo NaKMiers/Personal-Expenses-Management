@@ -4,7 +4,7 @@ import { OverviewType } from '@/app/api/stats/overview/route'
 import { toUTC } from '@/lib/utils'
 import Category from '@/patterns/prototypes/CategoryPrototype'
 import Transaction from '@/patterns/prototypes/TransactionPrototype'
-import { getOverviewApi } from '@/requests'
+import { StatApis } from '@/patterns/proxies/StatApiProxy'
 import { differenceInDays } from 'date-fns'
 import moment from 'moment'
 import { useCallback, useEffect, useState } from 'react'
@@ -34,7 +34,7 @@ function Overview() {
     setLoading(true)
 
     try {
-      const { overview, types, typeGroups } = await getOverviewApi(
+      const { overview, types, typeGroups } = await StatApis.getOverviewApi(
         toUTC(dateRange.from),
         toUTC(dateRange.to)
       )
