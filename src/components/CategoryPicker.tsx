@@ -154,7 +154,7 @@ function CategoryPicker({ type, onChange, initCategory, className = '' }: Catego
 
             <CreateCategoryDialog
               type={type}
-              refetch={getUserCategories}
+              refresh={getUserCategories}
               trigger={
                 <button className="trans-200 flex h-10 w-full items-center border-b border-slate-200/30 hover:bg-slate-200/30">
                   <div className="flex h-8 w-10 flex-shrink-0 items-center justify-center">

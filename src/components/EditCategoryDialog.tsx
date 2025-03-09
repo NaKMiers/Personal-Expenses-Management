@@ -1,23 +1,15 @@
 import { ICategory } from '@/models/CategoryModel'
-import { createCategoryApi, editCategoryApi } from '@/requests'
+import { categoryMediator } from '@/patterns/mediators/CategoryMediator'
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ReactNode, useCallback, useState } from 'react'
+import { ReactNode, useCallback, useEffect, useState } from 'react'
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { LuCircleOff, LuX } from 'react-icons/lu'
 import { RiDonutChartFill } from 'react-icons/ri'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from './ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 
 interface EditCategoryDialogProps {
   trigger: ReactNode
@@ -45,58 +37,34 @@ function EditCategoryDialog({ trigger, category, update, className = '' }: EditC
     },
   })
 
+  useEffect(() => {
+    reset({
+      name: category.name || '',
+      icon: category.icon || '',
+      type: category.type || 'expense',
+    })
+  }, [category, reset])
+
   // states
   const form = watch()
   const [open, setOpen] = useState<boolean>(false)
   const [saving, setSaving] = useState<boolean>(false)
 
-  // validate form
-  const handleValidate: SubmitHandler<FieldValues> = useCallback(
-    data => {
-      let isValid = true
-
-      // type is required
-      if (!data.type) {
-        setError('type', {
-          type: 'manual',
-          message: 'Type is required',
-        })
-        isValid = false
-      }
-
-      // name is required
-      if (!data.name) {
-        setError('name', {
-          type: 'manual',
-          message: 'Name is required',
-        })
-        isValid = false
-      }
-
-      return isValid
-    },
-    [setError]
-  )
-
   // create category
   const handleEditCategory: SubmitHandler<FieldValues> = useCallback(
     async data => {
       // validate form
-      if (!handleValidate(data)) return
+      if (!categoryMediator.validate(data, setError)) return
 
       // start loading
       setSaving(true)
 
-      toast.loading('Updating category...', { id: 'update-category' })
-
       try {
-        const { updatedCategory, message } = await editCategoryApi(category._id, data)
+        // const { updatedCategory, message } = await editCategoryApi(category._id, data)
+        await categoryMediator.edit(category._id, data, update)
 
-        toast.success(message, { id: 'update-category' })
         setOpen(false)
         reset()
-
-        update(updatedCategory)
       } catch (err: any) {
         toast.error('Failed to update category', { id: 'update-category' })
         console.log(err)
@@ -105,7 +73,7 @@ function EditCategoryDialog({ trigger, category, update, className = '' }: EditC
         setSaving(false)
       }
     },
-    [handleValidate, reset, update, category]
+    [reset, update, setError, category]
   )
 
   return (
@@ -147,6 +115,7 @@ function EditCategoryDialog({ trigger, category, update, className = '' }: EditC
               </div>
 
               <div className="mt-3 text-xs">
+                {/* MARK: Type */}
                 <p className="mb-2 mt-2 font-semibold">
                   Type <span className="font-normal">(required)</span>
                 </p>
@@ -183,6 +152,7 @@ function EditCategoryDialog({ trigger, category, update, className = '' }: EditC
                   </p>
                 )}
 
+                {/* MARK: Name */}
                 <p className="mt-3 font-semibold">
                   Name <span className="font-normal">(required)</span>
                 </p>
@@ -198,6 +168,7 @@ function EditCategoryDialog({ trigger, category, update, className = '' }: EditC
                   </span>
                 )}
 
+                {/* MARK: Icon */}
                 <p className="mt-3 font-semibold">
                   Icon <span className="font-normal">(optional)</span>
                 </p>
@@ -235,6 +206,8 @@ function EditCategoryDialog({ trigger, category, update, className = '' }: EditC
                 >
                   Cancel
                 </button>
+
+                {/* MARK: Save */}
                 <button
                   className="h-10 rounded-md bg-white px-21/2 text-[13px] font-semibold text-dark"
                   onClick={handleSubmit(handleEditCategory)}

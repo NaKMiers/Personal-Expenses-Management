@@ -1,5 +1,6 @@
 import { TransactionType } from '@/lib/types'
-import { createCategoryApi } from '@/requests'
+import { ICategory } from '@/models/CategoryModel'
+import { categoryMediator } from '@/patterns/mediators/CategoryMediator'
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -9,12 +10,11 @@ import toast from 'react-hot-toast'
 import { LuCircleOff, LuX } from 'react-icons/lu'
 import { RiDonutChartFill } from 'react-icons/ri'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
-import { ICategory } from '@/models/CategoryModel'
 
 interface CreateCategoryDialogProps {
   trigger: ReactNode
   type: TransactionType
-  refetch?: () => void
+  refresh?: () => void
   update?: (category: ICategory) => void
   className?: string
 }
@@ -22,7 +22,7 @@ interface CreateCategoryDialogProps {
 function CreateCategoryDialog({
   trigger,
   type,
-  refetch,
+  refresh,
   update,
   className = '',
 }: CreateCategoryDialogProps) {
@@ -49,44 +49,20 @@ function CreateCategoryDialog({
   const [open, setOpen] = useState<boolean>(false)
   const [saving, setSaving] = useState<boolean>(false)
 
-  // validate form
-  const handleValidate: SubmitHandler<FieldValues> = useCallback(
-    data => {
-      let isValid = true
-
-      // name is required
-      if (!data.name) {
-        setError('name', {
-          type: 'manual',
-          message: 'Name is required',
-        })
-        isValid = false
-      }
-
-      return isValid
-    },
-    [setError]
-  )
-
   // create category
   const handleCreateCategory: SubmitHandler<FieldValues> = useCallback(
     async data => {
       // validate form
-      if (!handleValidate(data)) return
+      if (!categoryMediator.validate(data, setError)) return
 
       // start loading
       setSaving(true)
 
-      toast.loading('Creating category...', { id: 'create-category' })
-
       try {
-        const { category, message } = await createCategoryApi(data)
+        await categoryMediator.create(data, refresh, update)
 
-        toast.success(message, { id: 'create-category' })
         setOpen(false)
         reset()
-        if (refetch) refetch()
-        if (update) update(category)
       } catch (err: any) {
         toast.error('Failed to create category', { id: 'create-category' })
         console.log(err)
@@ -95,7 +71,7 @@ function CreateCategoryDialog({
         setSaving(false)
       }
     },
-    [handleValidate, reset, refetch, update]
+    [reset, refresh, update, setError]
   )
 
   return (
@@ -138,6 +114,7 @@ function CreateCategoryDialog({
                 </button>
               </div>
 
+              {/* MARK: Name */}
               <div className="mt-3 text-xs">
                 <p className="font-semibold">
                   Name <span className="font-normal">(required)</span>
@@ -154,6 +131,7 @@ function CreateCategoryDialog({
                   </span>
                 )}
 
+                {/* MARK: Icon */}
                 <p className="mt-3 font-semibold">
                   Icon <span className="font-normal">(optional)</span>
                 </p>
@@ -191,6 +169,8 @@ function CreateCategoryDialog({
                 >
                   Cancel
                 </button>
+
+                {/* MARK: Save */}
                 <button
                   className="h-10 rounded-md bg-white px-21/2 text-[13px] font-semibold text-dark"
                   onClick={handleSubmit(handleCreateCategory)}
