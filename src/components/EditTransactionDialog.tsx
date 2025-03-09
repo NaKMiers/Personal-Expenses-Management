@@ -4,8 +4,8 @@ import CategoryPicker from '@/components/CategoryPicker'
 import { useAppSelector } from '@/hooks'
 import { currencies } from '@/lib/currencies'
 import { formatCurrency } from '@/lib/utils'
-import { IFullTransaction } from '@/models/TransactionModel'
 import { transactionMediator } from '@/patterns/mediators/TransactionMediator'
+import Transaction from '@/patterns/prototypes/TransactionPrototype'
 import { AnimatePresence, motion } from 'framer-motion'
 import moment from 'moment'
 import { ReactNode, useCallback, useEffect, useState } from 'react'
@@ -20,8 +20,8 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 
 interface EditTransactionDialogProps {
   trigger: ReactNode
-  transaction: IFullTransaction
-  update: (transaction: IFullTransaction) => void
+  transaction: Transaction
+  update: (transaction: Transaction) => void
   className?: string
 }
 

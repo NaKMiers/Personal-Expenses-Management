@@ -1,6 +1,6 @@
 import { TransactionType } from '@/lib/types'
-import { ICategory } from '@/models/CategoryModel'
 import { categoryMediator } from '@/patterns/mediators/CategoryMediator'
+import Category from '@/patterns/prototypes/CategoryPrototype'
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -15,7 +15,7 @@ interface CreateCategoryDialogProps {
   trigger: ReactNode
   type: TransactionType
   refresh?: () => void
-  update?: (category: ICategory) => void
+  update?: (category: Category) => void
   className?: string
 }
 

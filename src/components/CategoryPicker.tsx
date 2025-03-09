@@ -1,12 +1,12 @@
 'use client'
 
 import { TransactionType } from '@/lib/types'
-import { ICategory } from '@/models/CategoryModel'
+import Category from '@/patterns/prototypes/CategoryPrototype'
 import { deleteCategoryApi, getUserCategoriesApi } from '@/requests/categoryRequests'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { LuChevronsUpDown, LuSearch, LuSquarePlus, LuX } from 'react-icons/lu'
+import { LuChevronsUpDown, LuCopy, LuSearch, LuSquarePlus, LuX } from 'react-icons/lu'
 import { RiDonutChartFill } from 'react-icons/ri'
 import ConfirmDialog from './ConfirmDialog'
 import CreateCategoryDialog from './CreateCategoryDialog'
@@ -14,16 +14,16 @@ import CreateCategoryDialog from './CreateCategoryDialog'
 interface CategoryPickerProps {
   type: TransactionType
   onChange: (value: string) => void
-  initCategory?: ICategory
+  initCategory?: Category
   className?: string
 }
 
 function CategoryPicker({ type, onChange, initCategory, className = '' }: CategoryPickerProps) {
   // states
   const [open, setOpen] = useState<boolean>(false)
-  const [categories, setCategories] = useState<ICategory[]>([])
-  const [filteredCategories, setFilteredCategories] = useState<ICategory[]>([])
-  const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(initCategory || null)
+  const [categories, setCategories] = useState<Category[]>([])
+  const [filteredCategories, setFilteredCategories] = useState<Category[]>([])
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(initCategory || null)
 
   const [getting, setGetting] = useState<boolean>(true)
   const [deleting, setDeleting] = useState<string>('')
@@ -36,9 +36,22 @@ function CategoryPicker({ type, onChange, initCategory, className = '' }: Catego
 
     try {
       const { categories } = await getUserCategoriesApi(type)
+      const data: Category[] = []
+      for (const category of categories) {
+        const c = new Category(
+          category._id,
+          category.createdAt,
+          category.updatedAt,
+          category.name,
+          category.userId,
+          category.icon,
+          category.type
+        )
+        data.push(c)
+      }
 
-      setCategories(categories)
-      setFilteredCategories(categories)
+      setCategories(data)
+      setFilteredCategories(data)
     } catch (err: any) {
       console.error(err)
       toast.error(err.message)
@@ -48,7 +61,7 @@ function CategoryPicker({ type, onChange, initCategory, className = '' }: Catego
     }
   }, [type])
 
-  // initially get user categories
+  // initially get user data
   useEffect(() => {
     getUserCategories()
   }, [getUserCategories])
@@ -172,7 +185,7 @@ function CategoryPicker({ type, onChange, initCategory, className = '' }: Catego
               {filteredCategories.length > 0 ? (
                 filteredCategories.map(category => (
                   <div
-                    className="flex justify-center gap-1"
+                    className="flex items-center justify-center gap-1"
                     key={category._id}
                   >
                     <button
@@ -186,6 +199,17 @@ function CategoryPicker({ type, onChange, initCategory, className = '' }: Catego
                     >
                       <span>{category.icon}</span> {category.name}
                     </button>
+
+                    <button
+                      className="trans-200 flex h-6 flex-shrink-0 items-center rounded-sm bg-neutral-950 px-1.5 text-start text-sm font-semibold hover:bg-slate-200/30"
+                      onClick={async () => {
+                        await category.clone()
+                        getUserCategories()
+                      }}
+                    >
+                      <LuCopy size={12} />
+                    </button>
+
                     <ConfirmDialog
                       label="Delete category"
                       subLabel={`Are you sure you want to delete ${category.name} category?`}
@@ -195,7 +219,7 @@ function CategoryPicker({ type, onChange, initCategory, className = '' }: Catego
                       disabled={deleting === category._id}
                       className="!h-auto !w-auto"
                       trigger={
-                        <button className="trans-200 h-full flex-shrink-0 rounded-md bg-neutral-950 px-21/2 py-1.5 text-start text-sm font-semibold hover:bg-slate-200/30">
+                        <button className="trans-200 items-center5 flex h-6 flex-shrink-0 items-center rounded-sm bg-neutral-950 px-1 text-start text-sm font-semibold hover:bg-slate-200/30">
                           {deleting === category._id ? (
                             <RiDonutChartFill
                               size={16}

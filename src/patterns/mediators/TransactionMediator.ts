@@ -1,8 +1,8 @@
 import { toUTC } from '@/lib/utils'
-import { IFullTransaction } from '@/models/TransactionModel'
 import { createTransactionApi, editTransactionApi } from '@/requests'
 import { FieldValues } from 'react-hook-form'
 import toast from 'react-hot-toast'
+import Transaction from '../prototypes/TransactionPrototype'
 import { IMediator } from './IMediator'
 
 interface TransactionMediator extends IMediator {
@@ -10,7 +10,7 @@ interface TransactionMediator extends IMediator {
   edit(
     transactionId: string,
     data: FieldValues,
-    update: (transaction: IFullTransaction) => void
+    update: (transaction: Transaction) => void
   ): Promise<void>
   validate(
     data: FieldValues,
@@ -39,7 +39,7 @@ class ConcreteTransactionMediator implements TransactionMediator {
   async edit(
     transactionId: string,
     data: FieldValues,
-    update: (transaction: IFullTransaction) => void
+    update: (transaction: Transaction) => void
   ): Promise<void> {
     toast.loading('Updating transaction...', { id: 'update-transaction' })
     try {

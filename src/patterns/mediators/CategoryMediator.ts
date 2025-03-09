@@ -1,12 +1,12 @@
-import { ICategory } from '@/models/CategoryModel'
 import { createCategoryApi, editCategoryApi } from '@/requests'
 import { FieldValues } from 'react-hook-form'
 import toast from 'react-hot-toast'
+import Category from '../prototypes/CategoryPrototype'
 import { IMediator } from './IMediator'
 
 interface CategoryMediator extends IMediator {
-  create(data: FieldValues, refresh?: () => void, update?: (category: ICategory) => void): Promise<void>
-  edit(categoryId: string, data: FieldValues, update: (category: ICategory) => void): Promise<void>
+  create(data: FieldValues, refresh?: () => void, update?: (category: Category) => void): Promise<void>
+  edit(categoryId: string, data: FieldValues, update: (category: Category) => void): Promise<void>
   validate(
     data: FieldValues,
     setError: (field: string, error: { type: string; message: string }) => void
@@ -17,7 +17,7 @@ class ConcreteCategoryMediator implements CategoryMediator {
   async create(
     data: FieldValues,
     refresh?: () => void,
-    update?: (category: ICategory) => void
+    update?: (category: Category) => void
   ): Promise<void> {
     toast.loading('Creating category...', { id: 'create-category' })
     try {
@@ -35,7 +35,7 @@ class ConcreteCategoryMediator implements CategoryMediator {
   async edit(
     categoryId: string,
     data: FieldValues,
-    update: (category: ICategory) => void
+    update: (category: Category) => void
   ): Promise<void> {
     toast.loading('Updating category...', { id: 'update-category' })
     try {

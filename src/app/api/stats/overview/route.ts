@@ -1,14 +1,15 @@
 import { connectDatabase } from '@/config/database'
+import { toUTC } from '@/lib/utils'
 import { currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { NextRequest, NextResponse } from 'next/server'
-import TransactionModel, { IFullTransaction } from '@/models/TransactionModel'
-import { toUTC } from '@/lib/utils'
 
 // Models: Transaction, Category
-import '@/models/TransactionModel'
 import '@/models/CategoryModel'
-import { ICategory } from '@/models/CategoryModel'
+import '@/models/TransactionModel'
+import TransactionModel from '@/models/TransactionModel'
+import Category from '@/patterns/prototypes/CategoryPrototype'
+import Transaction from '@/patterns/prototypes/TransactionPrototype'
 
 export const dynamic = 'force-dynamic'
 
@@ -93,18 +94,18 @@ export async function GET(req: NextRequest) {
       const transactions = types[type]
       const categoryGroups: any = {}
 
-      transactions.forEach((transaction: IFullTransaction) => {
+      transactions.forEach((transaction: Transaction) => {
         const { category } = transaction
 
-        if (!categoryGroups[category.name]) {
-          categoryGroups[category.name] = []
+        if (!categoryGroups[(category as Category).name]) {
+          categoryGroups[(category as Category).name] = []
         }
 
-        categoryGroups[category.name].push(transaction)
+        categoryGroups[(category as Category).name].push(transaction)
       })
 
       // calculate total for each category
-      const categoryGroupsArray: { category: ICategory; total: number }[] = []
+      const categoryGroupsArray: { category: Category; total: number }[] = []
 
       for (const category in categoryGroups) {
         const transactions = categoryGroups[category]

@@ -1,7 +1,5 @@
 // Transaction
 
-import { ITransaction } from '@/models/TransactionModel'
-
 // [GET]: /transactions
 export const getUserTransactionsApi = async (
   from: Date | string,

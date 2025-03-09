@@ -1,4 +1,3 @@
-import { ICategory } from '@/models/CategoryModel'
 import { categoryMediator } from '@/patterns/mediators/CategoryMediator'
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
@@ -10,11 +9,12 @@ import { LuCircleOff, LuX } from 'react-icons/lu'
 import { RiDonutChartFill } from 'react-icons/ri'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
+import Category from '@/patterns/prototypes/CategoryPrototype'
 
 interface EditCategoryDialogProps {
   trigger: ReactNode
-  category: ICategory
-  update: (category: ICategory) => void
+  category: Category
+  update: (category: Category) => void
   className?: string
 }
 

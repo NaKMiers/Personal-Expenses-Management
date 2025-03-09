@@ -1,39 +1,52 @@
 'use client'
 
-import ConfirmDialog from '@/components/ConfirmDialog'
+import CategoryItem from '@/components/CategoryItem'
 import CreateCategoryDialog from '@/components/CreateCategoryDialog'
 import CurrencyBox from '@/components/CurrencyBox'
-import EditCategoryDialog from '@/components/EditCategoryDialog'
 import { TransactionType } from '@/lib/types'
-import { ICategory } from '@/models/CategoryModel'
-import { deleteCategoryApi, getUserCategoriesApi } from '@/requests'
+import Category from '@/patterns/prototypes/CategoryPrototype'
+import { getUserCategoriesApi } from '@/requests'
 import { LucidePlusSquare } from 'lucide-react'
-import { Dispatch, ReactNode, SetStateAction, useCallback, useEffect, useState } from 'react'
-import toast from 'react-hot-toast'
-import { LuPen, LuTrash, LuTrendingDown, LuTrendingUp } from 'react-icons/lu'
+import { ReactNode, useCallback, useEffect, useState } from 'react'
+import { LuTrendingDown, LuTrendingUp } from 'react-icons/lu'
 
 function ManagePage() {
   // states
-  const [categories, setCategories] = useState<ICategory[]>([])
-  const [deleting, setDeleting] = useState<string>('')
+  const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState<boolean>(false)
 
-  useEffect(() => {
-    const getUserCategoriesByType = async () => {
-      setLoading(true)
+  const getUserCategoriesByType = useCallback(async () => {
+    setLoading(true)
 
-      try {
-        const { categories } = await getUserCategoriesApi()
-        setCategories((categories as ICategory[]).sort((a, b) => a.name.localeCompare(b.name)))
-      } catch (err: any) {
-        console.log(err)
-      } finally {
-        setLoading(false)
+    try {
+      const { categories } = await getUserCategoriesApi()
+
+      const data: Category[] = []
+      for (const category of categories) {
+        const c = new Category(
+          category._id,
+          category.createdAt,
+          category.updatedAt,
+          category.name,
+          category.userId,
+          category.icon,
+          category.type
+        )
+        data.push(c)
       }
-    }
 
-    getUserCategoriesByType()
+      setCategories(data.sort((a, b) => a.name.localeCompare(b.name)))
+    } catch (err: any) {
+      console.log(err)
+    } finally {
+      setLoading(false)
+    }
   }, [])
+
+  // init fetching
+  useEffect(() => {
+    getUserCategoriesByType()
+  }, [getUserCategoriesByType])
 
   return (
     <>
@@ -48,33 +61,29 @@ function ManagePage() {
         <CurrencyBox />
 
         <UserCategories
-          deleting={deleting}
-          setDeleting={setDeleting}
           loading={loading}
           type="income"
-          categories={categories.filter(category => category.type === 'income')}
-          setCategories={setCategories}
+          categories={categories}
           icon={
             <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-emerald-500 bg-emerald-950">
               <LuTrendingUp size={24} />
             </div>
           }
           label="Income Categories"
+          refresh={getUserCategoriesByType}
         />
 
         <UserCategories
-          deleting={deleting}
-          setDeleting={setDeleting}
           loading={loading}
           type="expense"
-          categories={categories.filter(category => category.type === 'expense')}
-          setCategories={setCategories}
+          categories={categories}
           icon={
             <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-rose-500 bg-rose-950">
               <LuTrendingDown size={24} />
             </div>
           }
           label="Expense Categories"
+          refresh={getUserCategoriesByType}
         />
       </div>
 
@@ -87,49 +96,14 @@ export default ManagePage
 
 interface UserCategoriesProps {
   loading: boolean
-  deleting: string
-  setDeleting: (id: string) => void
-  categories: ICategory[]
-  setCategories: Dispatch<SetStateAction<ICategory[]>>
   type: TransactionType
+  categories: Category[]
   icon: ReactNode
   label: string
+  refresh?: () => void
 }
 
-function UserCategories({
-  loading,
-  deleting,
-  categories,
-  setDeleting,
-  setCategories,
-  type,
-  icon,
-  label,
-}: UserCategoriesProps) {
-  // delete category
-  const handleDeleteCategory = useCallback(
-    async (id: string) => {
-      if (!id) return
-
-      // start loading
-      setDeleting(id)
-      toast.loading('Deleting category...', { id: 'delete-category' })
-
-      try {
-        const { deletedCategory, message } = await deleteCategoryApi(id)
-        setCategories(categories.filter(category => category._id !== deletedCategory._id))
-        toast.success(message, { id: 'delete-category' })
-      } catch (err: any) {
-        toast.error(err.message, { id: 'delete-category' })
-        console.log(err)
-      } finally {
-        // stop loading
-        setDeleting('')
-      }
-    },
-    [categories, setCategories, setDeleting]
-  )
-
+function UserCategories({ refresh, categories, loading, type, icon, label }: UserCategoriesProps) {
   return loading ? (
     <SkeletonUserCategories />
   ) : (
@@ -142,9 +116,7 @@ function UserCategories({
         </div>
         <CreateCategoryDialog
           type={type}
-          update={(category: ICategory) =>
-            setCategories([category, ...categories].sort((a, b) => a.name.localeCompare(b.name)))
-          }
+          update={() => refresh && refresh()}
           trigger={
             <button className="flex h-10 flex-shrink-0 items-center gap-1.5 rounded-md bg-white px-2 text-sm font-semibold text-dark md:px-4">
               <LucidePlusSquare size={20} />
@@ -157,48 +129,11 @@ function UserCategories({
       <div className="flex flex-wrap p-1">
         {categories.length > 0 ? (
           categories.map(category => (
-            <div
-              className="w-1/3 p-1"
+            <CategoryItem
+              category={category}
               key={category._id}
-            >
-              <div className="flex flex-col rounded-lg border border-slate-200/30">
-                <div className="flex w-full flex-col items-center justify-center gap-1 p-4">
-                  <span className="text-3xl">{category.icon}</span>
-                  <p className="font-body text-base font-semibold">{category.name}</p>
-                </div>
-                <div className="flex h-9 w-full items-center justify-center gap-1 bg-neutral-600/50 p-1 text-slate-300">
-                  <ConfirmDialog
-                    label="Delete category"
-                    subLabel={`Are you sure you want to delete Salary category?`}
-                    confirmLabel="Delete"
-                    cancelLabel="Cancel"
-                    onConfirm={() => handleDeleteCategory(category._id)}
-                    disabled={deleting === category._id}
-                    trigger={
-                      <button className="trans-200 flex h-full w-full items-center justify-center gap-2 rounded-md hover:bg-neutral-600">
-                        <LuTrash />
-                        <span className="hidden text-sm md:block">Remove</span>
-                      </button>
-                    }
-                  />
-                  <EditCategoryDialog
-                    category={category}
-                    className="flex h-full w-full items-center justify-center"
-                    trigger={
-                      <button className="trans-200 flex h-full w-full items-center justify-center gap-2 rounded-md hover:bg-neutral-600">
-                        <LuPen />
-                        <span className="hidden text-sm md:block">Edit</span>
-                      </button>
-                    }
-                    update={(category: ICategory) =>
-                      setCategories(prev =>
-                        prev.map(cate => (cate._id === category._id ? category : cate))
-                      )
-                    }
-                  />
-                </div>
-              </div>
-            </div>
+              refresh={refresh}
+            />
           ))
         ) : (
           <div className="flex w-full items-center justify-center p-21/2 text-center text-xl font-semibold text-slate-400 md:p-21">
