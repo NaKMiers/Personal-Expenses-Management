@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 import { ICategory } from './CategoryModel'
 const Schema = mongoose.Schema
 
-export type ITransactionType = 'income' | 'expense'
+export type ITransactionType = 'income' | 'expense' | 'investment'
 
 const TransactionSchema = new Schema(
   {
@@ -23,7 +23,7 @@ const TransactionSchema = new Schema(
     },
     type: {
       type: String,
-      enum: ['income', 'expense'],
+      enum: ['income', 'expense', 'investment'],
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,

@@ -22,18 +22,21 @@ function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryPr
   const { userSettings, exchangeRate } = useAppSelector(state => state.settings)
 
   // states
-  const incomeCates = cateGroups.income
-  const [selectedIncomeCates, setSelectedIncomeCates] = useState<ICategory[]>(cateGroups.income)
+  const incomeCates = cateGroups?.income || []
+  const [selectedIncomeCates, setSelectedIncomeCates] = useState<ICategory[]>(incomeCates)
 
-  const expenseCates = cateGroups.expense
-  const [selectedExpenseCates, setSelectedExpenseCates] = useState<ICategory[]>(cateGroups.expense)
+  const expenseCates = cateGroups?.expense || []
+  const [selectedExpenseCates, setSelectedExpenseCates] = useState<ICategory[]>(expenseCates)
+
+  const investmentCates = cateGroups?.investment || []
+  const [selectedInvestmentCates, setSelectedInvestmentCates] = useState<ICategory[]>(investmentCates)
 
   // chart data
   const [data, setData] = useState<any[]>([])
   const [chart, setChart] = useState<ChartType>('Line')
   const [showIncome, setShowIncome] = useState<boolean>(true)
   const [showExpense, setShowExpense] = useState<boolean>(true)
-
+  const [showInvestment, setShowInvestment] = useState<boolean>(true)
   // values
   const charts: ChartType[] = ['Line', 'Bar', 'Area', 'Radar']
   const temp = [...typeGroups.income, ...typeGroups.expense]
@@ -49,6 +52,7 @@ function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryPr
     // filter transactions
     let filteredIncomeTransactions = typeGroups.income
     let filteredExpenseTransactions = typeGroups.expense
+    let filteredInvestmentTransactions = typeGroups.investment
 
     // filter income transactions by categories
     filteredIncomeTransactions = filteredIncomeTransactions.filter((transaction: IFullTransaction) =>
@@ -58,6 +62,12 @@ function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryPr
     // filter expense transactions by categories
     filteredExpenseTransactions = filteredExpenseTransactions.filter((transaction: IFullTransaction) =>
       selectedExpenseCates.some(cate => transaction.category._id === cate._id)
+    )
+
+    // filter investment transactions by categories
+    filteredInvestmentTransactions = filteredInvestmentTransactions.filter(
+      (transaction: IFullTransaction) =>
+        selectedInvestmentCates.some(cate => transaction.category._id === cate._id)
     )
 
     // split data into columns
@@ -112,6 +122,12 @@ function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryPr
         }
       )
 
+      const chunkInvestmentTransactions = filteredInvestmentTransactions.filter(
+        (transaction: IFullTransaction) => {
+          const transactionDate = momentTZ(transaction.date).utc()
+          return transactionDate.isBetween(colStart, colEnd, undefined, '[)')
+        }
+      )
       // Calculate total value
       let totalIncomeTransactionValue = chunkIncomeTransactions.reduce(
         (total: number, transaction: any) => total + (transaction.amount || 0),
@@ -120,6 +136,11 @@ function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryPr
 
       // Calculate total value
       let totalExpenseTransactionValue = chunkExpenseTransactions.reduce(
+        (total: number, transaction: any) => total + (transaction.amount || 0),
+        0
+      )
+
+      let totalInvestmentTransactionValue = chunkInvestmentTransactions.reduce(
         (total: number, transaction: any) => total + (transaction.amount || 0),
         0
       )
@@ -146,13 +167,23 @@ function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryPr
         name: colStart.format(dateFormat),
         income: totalIncomeTransactionValue,
         expense: totalExpenseTransactionValue,
+        investment: totalInvestmentTransactionValue,
       })
 
       iterator.add(1, splitGranularity as moment.unitOfTime.DurationConstructor)
     }
 
     setData(groupedData)
-  }, [from, to, typeGroups, exchangeRate, userSettings, selectedIncomeCates, selectedExpenseCates])
+  }, [
+    from,
+    to,
+    typeGroups,
+    exchangeRate,
+    userSettings,
+    selectedIncomeCates,
+    selectedExpenseCates,
+    selectedInvestmentCates,
+  ])
 
   return (
     <div className={cn('rounded-lg border border-slate-200/30 bg-neutral-800/30', className)}>
@@ -162,8 +193,8 @@ function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryPr
           <MultipleSelection
             trigger={
               <button className="trans-200 rounded-md bg-white px-2 py-1.5 text-xs font-semibold text-dark shadow-md">
-                {selectedIncomeCates.length}{' '}
-                {selectedIncomeCates.length !== 1 ? 'categories' : 'category'}
+                {selectedIncomeCates?.length ?? 0}{' '}
+                {selectedIncomeCates?.length !== 1 ? 'categories' : 'category'}
               </button>
             }
             list={incomeCates}
@@ -182,9 +213,21 @@ function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryPr
             selected={selectedExpenseCates}
             onChange={(list: any[]) => setSelectedExpenseCates(list)}
           />
+
+          <MultipleSelection
+            trigger={
+              <button className="trans-200 rounded-md bg-white px-2 py-1.5 text-xs font-semibold text-dark shadow-md">
+                {selectedInvestmentCates.length}{' '}
+                {selectedInvestmentCates.length !== 1 ? 'categories' : 'category'}
+              </button>
+            }
+            list={investmentCates}
+            selected={selectedInvestmentCates}
+            onChange={(list: any[]) => setSelectedInvestmentCates(list)}
+          />
         </div>
 
-        {/* Income and Expense */}
+        {/* Income and Expense ,Investment */}
         <div className="flex items-center gap-4">
           <div className="flex items-center justify-center gap-1.5 text-base font-semibold">
             <Switch
@@ -194,6 +237,7 @@ function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryPr
             />
             Income
           </div>
+
           <div className="flex items-center justify-center gap-1.5 text-base font-semibold">
             <Switch
               checked={showExpense}
@@ -203,6 +247,14 @@ function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryPr
             Expense
           </div>
 
+          <div className="flex items-center justify-center gap-1.5 text-base font-semibold">
+            <Switch
+              checked={showInvestment}
+              onCheckedChange={() => setShowInvestment(!showInvestment)}
+              className="bg-yellow-500/70"
+            />
+            Investment
+          </div>
           {/* Chart Selection */}
           <SingleSelection
             trigger={
@@ -218,7 +270,7 @@ function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryPr
       </div>
 
       <Chart
-        shows={[showIncome, showExpense]}
+        shows={[showIncome, showExpense, showInvestment]}
         maxKey={maxKey}
         chart={chart}
         data={data}
@@ -293,7 +345,7 @@ interface MultiSelectionProps {
 export function MultipleSelection({ trigger, list, selected, onChange }: MultiSelectionProps) {
   // states
   const [open, setOpen] = useState<boolean>(false)
-  const isObjectItem = typeof list[0] === 'object'
+  const isObjectItem = Array.isArray(list) && list?.[0] && typeof list[0] === 'object'
 
   return (
     <div className="relative">

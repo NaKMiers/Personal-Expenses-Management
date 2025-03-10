@@ -15,6 +15,7 @@ export const dynamic = 'force-dynamic'
 export type OverviewType = {
   income: number
   expense: number
+  investment: number
   balance: number
 }
 
@@ -61,11 +62,16 @@ export async function GET(req: NextRequest) {
       (total, trans) => (trans.type === 'expense' ? total + trans.amount : total),
       0
     )
-    const balance = income - expense
+    const investment = transactions.reduce(
+      (total, trans) => (trans.type === 'investment' ? total + trans.amount : total),
+      0
+    )
+    const balance = income - expense - investment
 
     const overview: OverviewType = {
       income,
       expense,
+      investment,
       balance,
     }
 
@@ -74,6 +80,7 @@ export async function GET(req: NextRequest) {
     const types: any = {
       income: [],
       expense: [],
+      investment: [],
     }
 
     transactions.forEach((transaction: any) => {

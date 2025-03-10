@@ -55,7 +55,7 @@ function CategoryPicker({ type, onChange, initCategory, className = '' }: Catego
 
   // filter categories
   useEffect(() => {
-    if (!categories.length) return
+    if (!categories?.length) return
     if (!filterText.trim()) {
       setFilteredCategories(categories)
       return
@@ -169,7 +169,7 @@ function CategoryPicker({ type, onChange, initCategory, className = '' }: Catego
             />
 
             <div className="flex max-h-[120px] flex-col overflow-y-auto p-1">
-              {filteredCategories.length > 0 ? (
+              {filteredCategories?.length > 0 ? (
                 filteredCategories.map(category => (
                   <div
                     className="flex justify-center gap-1"

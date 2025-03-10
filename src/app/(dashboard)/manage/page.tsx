@@ -76,6 +76,20 @@ function ManagePage() {
           }
           label="Expense Categories"
         />
+        <UserCategories
+          deleting={deleting}
+          setDeleting={setDeleting}
+          loading={loading}
+          type="investment"
+          categories={categories.filter(category => category.type === 'investment')}
+          setCategories={setCategories}
+          icon={
+            <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-rose-500 bg-rose-950">
+              <LuTrendingDown size={24} />
+            </div>
+          }
+          label="Investment Categories"
+        />
       </div>
 
       <div className="pt-40" />

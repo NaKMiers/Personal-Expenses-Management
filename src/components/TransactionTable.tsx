@@ -36,6 +36,7 @@ function TransactionTable({ data: transactions }: ITransactionTableProps) {
   const [shows, setShows] = useState({
     income: true,
     expense: true,
+    investment: true,
   })
   const [deleting, setDeleting] = useState<string[]>([])
   const [selectedTransactions, setSelectedTransactions] = useState<string[]>([])
@@ -140,6 +141,14 @@ function TransactionTable({ data: transactions }: ITransactionTableProps) {
               />
               Expense
             </div>
+            <div className="flex items-center justify-center gap-1.5 text-base font-semibold">
+              <Switch
+                checked={shows.investment}
+                onCheckedChange={() => setShows({ ...shows, investment: !shows.investment })}
+                className="bg-rose-500/70"
+              />
+              Investment
+            </div>
           </div>
 
           <MultipleSelection
@@ -214,6 +223,29 @@ function TransactionTable({ data: transactions }: ITransactionTableProps) {
                 data={filteredData.filter(item => item.type === 'expense')}
                 columns={columns}
                 type="expense"
+              />
+            </>
+          )}
+
+          {shows.investment && (
+            <>
+              {filteredData
+                .filter(item => item.type === 'investment')
+                .map(item => (
+                  <Row
+                    data={item}
+                    columns={selectedColumns}
+                    handleDeleteTransactions={handleDeleteTransactions}
+                    deleting={deleting}
+                    setSelectedTransactions={setSelectedTransactions}
+                    selectedTransactions={selectedTransactions}
+                    key={item._id}
+                  />
+                ))}
+              <FooterRow
+                data={filteredData.filter(item => item.type === 'investment')}
+                columns={columns}
+                type="investment"
               />
             </>
           )}

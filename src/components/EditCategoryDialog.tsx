@@ -170,6 +170,12 @@ function EditCategoryDialog({ trigger, category, update, className = '' }: EditC
                     >
                       Expense
                     </SelectItem>
+                    <SelectItem
+                      value="investment"
+                      className="text-xs"
+                    >
+                      Investment
+                    </SelectItem>
                   </SelectContent>
                 </Select>
                 {errors.type?.message ? (

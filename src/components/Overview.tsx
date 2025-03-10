@@ -58,9 +58,17 @@ function Overview() {
         new Map(expenseCategories.map((category: ICategory) => [category._id, category])).values()
       )
 
+      const investmentCategories = typeGroups.investment.map(
+        (transaction: IFullTransaction) => transaction.category
+      )
+      const uniqueInvestmentCategories: any[] = Array.from(
+        new Map(investmentCategories.map((category: ICategory) => [category._id, category])).values()
+      )
+
       setCateGroups({
         income: uniqueIncomeCategories,
         expense: uniqueExpenseCategories,
+        investment: uniqueInvestmentCategories,
       })
     } catch (err: any) {
       console.log(err)

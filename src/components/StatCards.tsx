@@ -50,6 +50,21 @@ function StatCards({ loading, overview = null, className = '' }: StatCardsProps)
       {overview && !loading ? (
         <Card
           icon={
+            <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-rose-500 bg-rose-950">
+              <LuTrendingDown size={24} />
+            </div>
+          }
+          title="Investment"
+          value={exchangeRate * (overview.investment || 0)}
+          currency={userSettings?.currency || 'USD'}
+        />
+      ) : (
+        <SkeletonCard />
+      )}
+
+      {overview && !loading ? (
+        <Card
+          icon={
             <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-violet-500 bg-violet-400/10">
               <LuWallet size={24} />
             </div>

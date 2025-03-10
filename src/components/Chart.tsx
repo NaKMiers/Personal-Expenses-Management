@@ -9,26 +9,24 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  Cell,
   Line,
   LineChart,
-  Pie,
-  PieChart,
-  PolarAngleAxis,
-  PolarGrid,
-  PolarRadiusAxis,
   Radar,
   RadarChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
 } from 'recharts'
 
 export type ChartDatum = {
   name: string
   income: number
   expense: number
+  investment: number
 }
 
 export type ChartType = 'Line' | 'Bar' | 'Area' | 'Radar'
@@ -43,7 +41,6 @@ interface ChartProps {
   exchangeRate: number
 }
 
-const COLORS = ['#111', '#01dbe5', '#ff6347', '#ffa500', '#8a2be2']
 function Chart({
   shows,
   chart,
@@ -102,25 +99,17 @@ function Chart({
                 activeDot={{ r: 6 }}
               />
             )}
-            <Tooltip
-              cursor={{
-                stroke: '#ddd',
-                strokeWidth: 2,
-                fill: '#111',
-                radius: 4,
-                className: 'transition-all duration-75',
-              }}
-              animationEasing="ease-in-out"
-              animationDuration={200}
-              formatter={formatTooltip}
-              labelStyle={{ color: '#01dbe5' }}
-              contentStyle={{
-                background: '#333',
-                borderRadius: 8,
-                border: 'none',
-                boxShadow: '0px 14px 10px 5px rgba(0, 0, 0, 0.2)',
-              }}
-            />
+            {shows[2] && (
+              <Line
+                type="monotone"
+                dataKey="investment"
+                stroke="#EAB308"
+                strokeWidth={2}
+                dot={{ stroke: '#EAB308', strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6 }}
+              />
+            )}
+            <Tooltip formatter={formatTooltip} />
           </LineChart>
         ) : chart === 'Bar' ? (
           <BarChart data={data}>
@@ -142,7 +131,6 @@ function Chart({
                 dataKey="income"
                 fill="#10B981"
                 radius={[6, 6, 0, 0]}
-                barSize={30}
               />
             )}
             {shows[1] && (
@@ -150,22 +138,16 @@ function Chart({
                 dataKey="expense"
                 fill="#F43F5E"
                 radius={[6, 6, 0, 0]}
-                barSize={30}
               />
             )}
-            <Tooltip
-              cursor={{ fill: 'rgba(0,0,0,0.1)' }}
-              animationEasing="ease-in-out"
-              animationDuration={200}
-              formatter={formatTooltip}
-              labelStyle={{ color: '#01dbe5' }}
-              contentStyle={{
-                background: '#333',
-                borderRadius: 8,
-                border: 'none',
-                boxShadow: '0px 14px 10px 5px rgba(0, 0, 0, 0.2)',
-              }}
-            />
+            {shows[2] && (
+              <Bar
+                dataKey="investment"
+                fill="#EAB308"
+                radius={[6, 6, 0, 0]}
+              />
+            )}
+            <Tooltip formatter={formatTooltip} />
           </BarChart>
         ) : chart === 'Area' ? (
           <AreaChart data={data}>
@@ -189,8 +171,6 @@ function Chart({
                 stroke="#10B981"
                 strokeWidth={2}
                 fill="#10B98120"
-                dot={{ stroke: '#ddd', strokeWidth: 2, r: 4 }}
-                activeDot={{ r: 6 }}
               />
             )}
             {shows[1] && (
@@ -200,23 +180,18 @@ function Chart({
                 stroke="#F43F5E"
                 strokeWidth={2}
                 fill="#F43F5E20"
-                dot={{ stroke: '#ddd', strokeWidth: 2, r: 4 }}
-                activeDot={{ r: 6 }}
               />
             )}
-            <Tooltip
-              cursor={{ fill: 'rgba(0,0,0,0.1)' }}
-              animationEasing="ease-in-out"
-              animationDuration={200}
-              formatter={formatTooltip}
-              labelStyle={{ color: '#01dbe5' }}
-              contentStyle={{
-                background: '#333',
-                borderRadius: 8,
-                border: 'none',
-                boxShadow: '0px 14px 10px 5px rgba(0, 0, 0, 0.2)',
-              }}
-            />
+            {shows[2] && (
+              <Area
+                type="monotone"
+                dataKey="investment"
+                stroke="#EAB308"
+                strokeWidth={2}
+                fill="#EAB30820"
+              />
+            )}
+            <Tooltip formatter={formatTooltip} />
           </AreaChart>
         ) : (
           <RadarChart data={data}>
@@ -242,15 +217,15 @@ function Chart({
                 fillOpacity={0.6}
               />
             )}
-            <Tooltip
-              formatter={formatTooltip}
-              contentStyle={{
-                background: '#333',
-                borderRadius: 8,
-                border: 'none',
-                boxShadow: '0px 14px 10px 5px rgba(0, 0, 0, 0.2)',
-              }}
-            />
+            {shows[2] && (
+              <Radar
+                dataKey="investment"
+                stroke="#EAB308"
+                fill="#EAB30880"
+                fillOpacity={0.6}
+              />
+            )}
+            <Tooltip formatter={formatTooltip} />
           </RadarChart>
         )}
       </ResponsiveContainer>

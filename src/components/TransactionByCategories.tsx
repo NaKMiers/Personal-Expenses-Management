@@ -36,6 +36,17 @@ function TransactionByCategories({ loading, types, className = '' }: Transaction
       ) : (
         <SkeletonCategory />
       )}
+      {types?.investment && !loading ? (
+        <Category
+          label="Investments by category"
+          categories={types.investment}
+          currency={userSettings?.currency}
+          rate={exchangeRate}
+          color="bg-yellow-500/70"
+        />
+      ) : (
+        <SkeletonCategory />
+      )}
     </div>
   )
 }

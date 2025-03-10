@@ -36,6 +36,15 @@ function DashboardPage() {
               }
               refresh={() => router.refresh()}
             />
+            <CreateTransactionDialog
+              type="investment"
+              trigger={
+                <button className="trans-200 h-8 rounded-md border-2 border-yellow-500 bg-yellow-950 px-2 text-xs font-semibold hover:bg-yellow-700">
+                  New Investment 📈
+                </button>
+              }
+              refresh={() => router.refresh()}
+            />
           </div>
         </div>
       </div>
