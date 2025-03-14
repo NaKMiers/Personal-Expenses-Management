@@ -39,7 +39,7 @@ function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryPr
   const [showInvestment, setShowInvestment] = useState<boolean>(true)
   // values
   const charts: ChartType[] = ['Line', 'Bar', 'Area', 'Radar']
-  const temp = [...typeGroups.income, ...typeGroups.expense]
+  const temp = [...typeGroups.income, ...typeGroups.expense, ...typeGroups.investment]
   const maxKey =
     temp.length > 0
       ? temp.reduce((max, transaction) => (transaction.amount > max.amount ? transaction : max)).type
