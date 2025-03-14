@@ -56,10 +56,10 @@ function Overview() {
       )
 
       const investmentCategories = typeGroups.investment.map(
-        (transaction: IFullTransaction) => transaction.category
+        (transaction: Transaction) => transaction.category
       )
       const uniqueInvestmentCategories: any[] = Array.from(
-        new Map(investmentCategories.map((category: ICategory) => [category._id, category])).values()
+        new Map(investmentCategories.map((category: Category) => [category._id, category])).values()
       )
 
       setCateGroups({

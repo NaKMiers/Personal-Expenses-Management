@@ -51,6 +51,8 @@ function Chart({ shows, chart, data = [], maxKey, userSettings, className = '' }
     [userSettings]
   )
 
+  console.log('data: ', data)
+
   return (
     <div className={`relative ${className}`}>
       <ResponsiveContainer
