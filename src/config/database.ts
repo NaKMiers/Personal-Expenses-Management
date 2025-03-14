@@ -1,30 +1,55 @@
 import mongoose from 'mongoose'
 
-let cachedConnection: any = null
+class DatabaseManager {
+  private static instance: DatabaseManager | null = null
+  private connection: mongoose.Connection | null = null
 
-export async function connectDatabase() {
-  if (cachedConnection) {
-    console.log('Returning cached database connection')
-    return cachedConnection
+  private constructor() {}
+
+  public static getInstance(): DatabaseManager {
+    if (!DatabaseManager.instance) {
+      DatabaseManager.instance = new DatabaseManager()
+    }
+    return DatabaseManager.instance
   }
 
-  try {
-    await mongoose.connect(process.env.MONGODB!)
-    const connection = mongoose.connection
+  public async connect(): Promise<mongoose.Connection> {
+    if (this.connection) {
+      console.log('Returning cached database connection')
+      return this.connection
+    }
 
-    connection.on('connected', () => {
-      console.log('MongoDB connected successfully')
-    })
+    try {
+      await mongoose.connect(process.env.MONGODB!)
+      this.connection = mongoose.connection
 
-    connection.on('error', error => {
-      console.log('MongoDB connection error. Please make sure MongoDB is running. ' + error)
-    })
+      this.connection.on('connected', () => {
+        console.log('MongoDB connected successfully')
+      })
 
-    cachedConnection = connection //
-    return connection
-  } catch (error) {
-    console.log('Something goes wrong!')
-    console.log(error)
-    throw new Error('Unable to connect to database')
+      this.connection.on('error', err => {
+        console.log('MongoDB connection error:', err)
+      })
+
+      return this.connection
+    } catch (err: any) {
+      console.log('Something goes wrong!')
+      console.log(err)
+      throw new Error('Unable to connect to database')
+    }
+  }
+
+  public async disconnect(): Promise<void> {
+    if (this.connection) {
+      await mongoose.disconnect()
+      this.connection = null
+      console.log('MongoDB disconnected')
+    }
   }
 }
+
+export async function connectDatabase(): Promise<mongoose.Connection> {
+  return await DatabaseManager.getInstance().connect()
+}
+
+export default DatabaseManager

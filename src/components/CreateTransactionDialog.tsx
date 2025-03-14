@@ -4,14 +4,13 @@ import CategoryPicker from '@/components/CategoryPicker'
 import { useAppSelector } from '@/hooks'
 import { currencies } from '@/lib/currencies'
 import { TransactionType } from '@/lib/types'
-import { toUTC } from '@/lib/utils'
-import { createTransactionApi } from '@/requests'
+import { transactionMediator } from '@/patterns/mediators/TransactionMediator'
 import { AnimatePresence, motion } from 'framer-motion'
 import moment from 'moment'
 import { ReactNode, useCallback, useState } from 'react'
 import 'react-date-range/dist/styles.css'
 import 'react-date-range/dist/theme/default.css'
-import { FieldValues, SubmitHandler, useForm } from 'react-hook-form'
+import { FieldValues, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { LuCalendar, LuX } from 'react-icons/lu'
 import { RiDonutChartFill } from 'react-icons/ri'
@@ -53,88 +52,32 @@ function CreateTransactionDialog({
   const form = watch()
   const [open, setOpen] = useState<boolean>(false)
   const [saving, setSaving] = useState<boolean>(false)
+  const { userSettings } = useAppSelector(state => state.settings)
 
-  const { userSettings, exchangeRate } = useAppSelector(state => state.settings)
-
-  // validate form
-  const handleValidate: SubmitHandler<FieldValues> = useCallback(
-    data => {
-      let isValid = true
-
-      // amount is required
-      if (!data.amount) {
-        setError('amount', {
-          type: 'manual',
-          message: 'Amount is required',
-        })
-        isValid = false
-      }
-      // amount must be >= 0
-      else if (data.amount < 0) {
-        setError('amount', {
-          type: 'manual',
-          message: 'Amount must be greater than or equal to 0',
-        })
-        isValid = false
-      }
-
-      // category must be selected
-      if (!data.category) {
-        setError('category', {
-          type: 'manual',
-          message: 'Category is required',
-        })
-        isValid = false
-      }
-
-      // date must be selected
-      if (!data.date) {
-        setError('date', {
-          type: 'manual',
-          message: 'Date is required',
-        })
-        isValid = false
-      }
-
-      return isValid
-    },
-    [setError]
-  )
-
-  // create transaction
-  const handleCreateTransaction: SubmitHandler<FieldValues> = useCallback(
-    async data => {
-      // validate form
-      if (!handleValidate(data)) return
+  const handleCreateTransaction = useCallback(
+    async (data: FieldValues) => {
+      if (!transactionMediator.validate(data, setError)) return
 
       // start loading
       setSaving(true)
 
-      toast.loading('Creating transaction...', { id: 'create-transaction' })
-
       try {
-        const { transaction, message } = await createTransactionApi({
-          ...data,
-          date: toUTC(data.date),
-          amount: data.amount / exchangeRate,
-        })
-        toast.success(message, { id: 'create-transaction' })
+        await transactionMediator.create(data, refresh)
+
+        // close dialog
         setOpen(false)
         reset()
-
-        if (refresh) {
-          refresh()
-        }
       } catch (err: any) {
-        toast.error('Failed to create transaction', { id: 'create-transaction' })
+        toast.error(err.message)
         console.log(err)
       } finally {
         // stop loading
         setSaving(false)
       }
     },
-    [reset, refresh, handleValidate, exchangeRate]
+    [setError, refresh, reset]
   )
+
   return (
     <div className={`relative ${className}`}>
       <div onClick={() => setOpen(true)}>{trigger}</div>
@@ -171,10 +114,10 @@ function CreateTransactionDialog({
               </div>
 
               <div className="mt-3 text-xs">
-                {/* Description */}
+                {/* MARK: Description */}
                 <div className="flex flex-col">
                   <p className="font-semibold">
-                    Description <span className="font-normal">(option)</span>
+                    Description <span className="font-normal">(optional)</span>
                   </p>
                   <input
                     type="text"
@@ -189,7 +132,7 @@ function CreateTransactionDialog({
                   )}
                 </div>
 
-                {/* Amount */}
+                {/* MARK: Amount */}
                 <div className="flex flex-col">
                   <p className="mt-3 font-semibold">
                     Amount <span className="font-normal">(required)</span>
@@ -214,7 +157,7 @@ function CreateTransactionDialog({
                 </div>
 
                 <div className="flex gap-21/2">
-                  {/* Category */}
+                  {/* MARK: Category */}
                   <div className="mt-3 flex flex-1 flex-col">
                     <p className="mb-2 font-semibold">Category</p>
                     <div onFocus={() => clearErrors('category')}>
@@ -230,9 +173,9 @@ function CreateTransactionDialog({
                     )}
                   </div>
 
-                  {/* Transaction */}
+                  {/* MARK: Date */}
                   <div className="mt-3 flex flex-1 flex-col">
-                    <p className="mb-2 font-semibold">Transaction</p>
+                    <p className="mb-2 font-semibold">Date</p>
                     <div onFocus={() => clearErrors('date')}>
                       <Popover>
                         <PopoverTrigger className="w-full">
@@ -275,6 +218,8 @@ function CreateTransactionDialog({
                 >
                   Cancel
                 </button>
+
+                {/* MARK: Save */}
                 <button
                   className="h-10 rounded-md bg-white px-21/2 text-[13px] font-semibold text-dark"
                   onClick={handleSubmit(handleCreateTransaction)}

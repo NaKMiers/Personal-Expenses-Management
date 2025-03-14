@@ -3,8 +3,8 @@
 import TransactionTable, { SkeletonTransactionTable } from '@/components/TransactionTable'
 import { DateRangePicker } from '@/components/ui/DateRangePicker'
 import { toUTC } from '@/lib/utils'
-import { IFullTransaction } from '@/models/TransactionModel'
-import { getUserTransactionsApi } from '@/requests'
+import Transaction from '@/patterns/prototypes/TransactionPrototype'
+import { TransactionApis } from '@/patterns/proxies/TransactionApiProxy'
 import { differenceInDays } from 'date-fns'
 import moment from 'moment'
 import { useCallback, useEffect, useState } from 'react'
@@ -13,7 +13,7 @@ import { LuRotateCcw } from 'react-icons/lu'
 
 function TransactionsPage() {
   // states
-  const [transactions, setTransactions] = useState<IFullTransaction[]>([])
+  const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
     from: moment().startOf('month').toDate(),
@@ -25,8 +25,30 @@ function TransactionsPage() {
     setLoading(true)
 
     try {
-      const { transactions } = await getUserTransactionsApi(toUTC(dateRange.from), toUTC(dateRange.to))
-      setTransactions(transactions)
+      const { transactions } = await TransactionApis.getUserTransactionsApi(
+        toUTC(dateRange.from),
+        toUTC(dateRange.to),
+        { noCache: true }
+      )
+
+      const data: Transaction[] = []
+      for (const tx of transactions) {
+        const t = new Transaction(
+          tx._id,
+          tx.createdAt,
+          tx.updatedAt,
+          tx.amount,
+          tx.description,
+          tx.date,
+          tx.userId,
+          tx.type,
+          tx.category
+        )
+
+        data.push(t)
+      }
+
+      setTransactions(data)
     } catch (err: any) {
       console.log(err)
     } finally {
@@ -79,7 +101,14 @@ function TransactionsPage() {
       </div>
 
       <div className="container p-21/2 md:p-21">
-        {!loading ? <TransactionTable data={transactions} /> : <SkeletonTransactionTable />}
+        {!loading ? (
+          <TransactionTable
+            data={transactions}
+            refresh={getUserTransactions}
+          />
+        ) : (
+          <SkeletonTransactionTable />
+        )}
       </div>
     </>
   )

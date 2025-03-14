@@ -2,10 +2,9 @@
 
 import { OverviewType } from '@/app/api/stats/overview/route'
 import { toUTC } from '@/lib/utils'
-import { ICategory } from '@/models/CategoryModel'
-import { IFullTransaction } from '@/models/TransactionModel'
-import { IUserSettings } from '@/models/UserSettingsModel'
-import { getOverviewApi } from '@/requests'
+import Category from '@/patterns/prototypes/CategoryPrototype'
+import Transaction from '@/patterns/prototypes/TransactionPrototype'
+import { StatApis } from '@/patterns/proxies/StatApiProxy'
 import { differenceInDays } from 'date-fns'
 import moment from 'moment'
 import { useCallback, useEffect, useState } from 'react'
@@ -35,7 +34,7 @@ function Overview() {
     setLoading(true)
 
     try {
-      const { overview, types, typeGroups } = await getOverviewApi(
+      const { overview, types, typeGroups } = await StatApis.getOverviewApi(
         toUTC(dateRange.from),
         toUTC(dateRange.to)
       )
@@ -44,18 +43,16 @@ function Overview() {
       setTypeGroups(typeGroups)
 
       // extract categories
-      const incomeCategories = typeGroups.income.map(
-        (transaction: IFullTransaction) => transaction.category
-      )
+      const incomeCategories = typeGroups.income.map((transaction: Transaction) => transaction.category)
       const uniqueIncomeCategories: any[] = Array.from(
-        new Map(incomeCategories.map((category: ICategory) => [category._id, category])).values()
+        new Map(incomeCategories.map((category: Category) => [category._id, category])).values()
       )
 
       const expenseCategories = typeGroups.expense.map(
-        (transaction: IFullTransaction) => transaction.category
+        (transaction: Transaction) => transaction.category
       )
       const uniqueExpenseCategories: any[] = Array.from(
-        new Map(expenseCategories.map((category: ICategory) => [category._id, category])).values()
+        new Map(expenseCategories.map((category: Category) => [category._id, category])).values()
       )
 
       const investmentCategories = typeGroups.investment.map(

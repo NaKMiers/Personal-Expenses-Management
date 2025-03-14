@@ -1,7 +1,7 @@
 import { useAppSelector } from '@/hooks'
 import { cn, toUTC } from '@/lib/utils'
-import { ICategory } from '@/models/CategoryModel'
-import { IFullTransaction } from '@/models/TransactionModel'
+import Category from '@/patterns/prototypes/CategoryPrototype'
+import Transaction from '@/patterns/prototypes/TransactionPrototype'
 import { AnimatePresence, motion } from 'framer-motion'
 import { default as moment, default as momentTZ } from 'moment-timezone'
 import { ReactNode, useEffect, useState } from 'react'
@@ -19,17 +19,17 @@ interface HistoryProps {
 
 function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryProps) {
   // store
-  const { userSettings, exchangeRate } = useAppSelector(state => state.settings)
+  const { userSettings } = useAppSelector(state => state.settings)
 
   // states
   const incomeCates = cateGroups?.income || []
-  const [selectedIncomeCates, setSelectedIncomeCates] = useState<ICategory[]>(incomeCates)
+  const [selectedIncomeCates, setSelectedIncomeCates] = useState<Category[]>(incomeCates)
 
   const expenseCates = cateGroups?.expense || []
-  const [selectedExpenseCates, setSelectedExpenseCates] = useState<ICategory[]>(expenseCates)
+  const [selectedExpenseCates, setSelectedExpenseCates] = useState<Category[]>(expenseCates)
 
   const investmentCates = cateGroups?.investment || []
-  const [selectedInvestmentCates, setSelectedInvestmentCates] = useState<ICategory[]>(investmentCates)
+  const [selectedInvestmentCates, setSelectedInvestmentCates] = useState<Category[]>(investmentCates)
 
   // chart data
   const [data, setData] = useState<any[]>([])
@@ -47,7 +47,7 @@ function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryPr
 
   // auto update chart data
   useEffect(() => {
-    if (!typeGroups || !userSettings || !exchangeRate) return
+    if (!typeGroups || !userSettings) return
 
     // filter transactions
     let filteredIncomeTransactions = typeGroups.income
@@ -55,19 +55,18 @@ function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryPr
     let filteredInvestmentTransactions = typeGroups.investment
 
     // filter income transactions by categories
-    filteredIncomeTransactions = filteredIncomeTransactions.filter((transaction: IFullTransaction) =>
-      selectedIncomeCates.some(cate => transaction.category._id === cate._id)
+    filteredIncomeTransactions = filteredIncomeTransactions.filter((transaction: Transaction) =>
+      selectedIncomeCates.some(cate => (transaction.category as Category)._id === cate._id)
     )
 
     // filter expense transactions by categories
-    filteredExpenseTransactions = filteredExpenseTransactions.filter((transaction: IFullTransaction) =>
-      selectedExpenseCates.some(cate => transaction.category._id === cate._id)
+    filteredExpenseTransactions = filteredExpenseTransactions.filter((transaction: Transaction) =>
+      selectedExpenseCates.some(cate => (transaction.category as Category)._id === cate._id)
     )
 
     // filter investment transactions by categories
-    filteredInvestmentTransactions = filteredInvestmentTransactions.filter(
-      (transaction: IFullTransaction) =>
-        selectedInvestmentCates.some(cate => transaction.category._id === cate._id)
+    filteredInvestmentTransactions = filteredInvestmentTransactions.filter((transaction: Transaction) =>
+      selectedInvestmentCates.some(cate => (transaction.category as Category)._id === cate._id)
     )
 
     // split data into columns
@@ -107,23 +106,19 @@ function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryPr
       let colEnd = colStart.clone().endOf(splitGranularity as moment.unitOfTime.StartOf)
 
       // Filter transactions in this range
-      const chunkIncomeTransactions = filteredIncomeTransactions.filter(
-        (transaction: IFullTransaction) => {
-          const transactionDate = momentTZ(transaction.date).utc()
-          return transactionDate.isBetween(colStart, colEnd, undefined, '[)')
-        }
-      )
+      const chunkIncomeTransactions = filteredIncomeTransactions.filter((transaction: Transaction) => {
+        const transactionDate = momentTZ(transaction.date).utc()
+        return transactionDate.isBetween(colStart, colEnd, undefined, '[)')
+      })
 
       // Filter expense in this range
-      const chunkExpenseTransactions = filteredExpenseTransactions.filter(
-        (transaction: IFullTransaction) => {
-          const transactionDate = momentTZ(transaction.date).utc()
-          return transactionDate.isBetween(colStart, colEnd, undefined, '[)')
-        }
-      )
+      const chunkExpenseTransactions = filteredExpenseTransactions.filter((transaction: Transaction) => {
+        const transactionDate = momentTZ(transaction.date).utc()
+        return transactionDate.isBetween(colStart, colEnd, undefined, '[)')
+      })
 
       const chunkInvestmentTransactions = filteredInvestmentTransactions.filter(
-        (transaction: IFullTransaction) => {
+        (transaction: Transaction) => {
           const transactionDate = momentTZ(transaction.date).utc()
           return transactionDate.isBetween(colStart, colEnd, undefined, '[)')
         }
@@ -178,7 +173,6 @@ function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryPr
     from,
     to,
     typeGroups,
-    exchangeRate,
     userSettings,
     selectedIncomeCates,
     selectedExpenseCates,
@@ -275,7 +269,6 @@ function History({ from, to, typeGroups, cateGroups, className = '' }: HistoryPr
         chart={chart}
         data={data}
         userSettings={userSettings}
-        exchangeRate={exchangeRate}
         className="-ml-21 pr-21/2"
       />
     </div>

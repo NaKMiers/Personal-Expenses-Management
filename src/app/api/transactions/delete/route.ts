@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
 import { connectDatabase } from '@/config/database'
+import TransactionModel from '@/models/TransactionModel'
 import { currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
-import TransactionModel, { ITransaction } from '@/models/TransactionModel'
+import { NextRequest, NextResponse } from 'next/server'
 
 // Models: Transaction
 import '@/models/TransactionModel'
