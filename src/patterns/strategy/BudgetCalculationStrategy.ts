@@ -1,15 +1,11 @@
-interface BudgetCalculationStrategy {
-  calculateRemaining(budget: any, transactions: any[]): number;
-}
-
-class MonthlyBudgetCalculation implements BudgetCalculationStrategy {
+class MonthlyBudgetCalculation implements IBudgetCalculation {
   calculateRemaining(budget: any, transactions: any[]): number {
     const totalSpent = transactions.reduce((sum, transaction) => sum + transaction.amount, 0);
     return budget.amount - totalSpent;
   }
 }
 
-class YearlyBudgetCalculation implements BudgetCalculationStrategy {
+class YearlyBudgetCalculation implements IBudgetCalculation {
   calculateRemaining(budget: any, transactions: any[]): number {
     const totalSpent = transactions.reduce((sum, transaction) => sum + transaction.amount, 0);
     return budget.amount - totalSpent;
@@ -19,7 +15,7 @@ class YearlyBudgetCalculation implements BudgetCalculationStrategy {
 const budget = { amount: 1000000, type: 'monthly' };
 const transactions = [{ amount: 200000 }, { amount: 300000 }];
 
-let strategy: BudgetCalculationStrategy;
+let strategy: IBudgetCalculation;
 if (budget.type === 'monthly') {
   strategy = new MonthlyBudgetCalculation();
 } else {
