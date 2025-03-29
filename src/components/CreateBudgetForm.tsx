@@ -13,6 +13,7 @@ import { Calendar } from './ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import mongoose from 'mongoose'
 import { BudgetFactory } from '@/patterns/factory/BudgetFactory'
+import CategoryPicker from '@/components/CategoryPicker'
 
 interface ICategory {
   _id: string; // Hoặc mongoose.Types.ObjectId
@@ -45,8 +46,8 @@ function CreateBudgetForm({
       amount: '',
       startDate: moment().format('YYYY-MM-DD'),
       endDate: moment().add(1, 'month').format('YYYY-MM-DD'),
-      type: 'monthly', // Default type
-      categoryId: '', // Thêm trường categoryId
+      type: 'monthly',
+      categoryId: '',
     },
   })
 
@@ -54,22 +55,6 @@ function CreateBudgetForm({
   const [open, setOpen] = useState<boolean>(false)
   const [saving, setSaving] = useState<boolean>(false)
   const { userSettings } = useAppSelector(state => state.settings)
-  const [categories, setCategories] = useState<ICategory[]>([]) // State để lưu danh sách categories
-
-  // Lấy danh sách categories từ API
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch('/api/categories') // Gọi API để lấy danh sách categories
-        const data = await response.json()
-        setCategories(data)
-      } catch (error) {
-        console.error('Failed to fetch categories:', error)
-      }
-    }
-
-    fetchCategories()
-  }, [])
 
   const handleCreateBudget = useCallback(
     async (data: FieldValues) => {
@@ -87,8 +72,8 @@ function CreateBudgetForm({
         const budget = BudgetFactory.createBudget(
           data.type, // Type from form
           data.name,
-          new mongoose.Types.ObjectId(data.categoryId), // Truyền categoryId
-          userSettings.userId, // Assuming userId is available in userSettings
+          new mongoose.Types.ObjectId(data.categoryId),
+          userSettings.userId,
           parseFloat(data.amount),
           new Date(data.startDate),
           new Date(data.endDate),
@@ -185,25 +170,18 @@ function CreateBudgetForm({
                 </div>
 
                 {/* MARK: Category */}
-                <div className="mt-3 flex flex-col">
-                  <p className="font-semibold">
-                    Category <span className="font-normal">(required)</span>
-                  </p>
-                  <select
-                    className="mt-2 h-10 w-full rounded-md border border-slate-200/30 bg-neutral-800 px-21/2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    {...register('categoryId', { required: true })}
-                  >
-                    <option value="" disabled>Select a category</option>
-                    {Array.isArray(categories) ? categories.map(category => (
-                      <option key={category._id} value={category._id} className="bg-neutral-800 text-white">
-                        {category.name} ({category.type})
-                      </option>
-                    )) : <option>Không có danh mục</option>}
-                  </select>
-                  {errors.categoryId?.message && (
+                <div className="mt-3 flex flex-1 flex-col">
+                  <p className="mb-2 font-semibold">Category</p>
+                  <div onFocus={() => clearErrors('category')}>
+                    <CategoryPicker
+                      onChange={(category: string) => setValue('category', category)}
+                      type={"expense"}
+                    />
+                  </div>
+                  {errors.category?.message && (
                     <span className="ml-1 mt-0.5 text-xs italic text-rose-400">
-                      {errors.categoryId?.message?.toString()}
-                    </span>
+                        {errors.category?.message?.toString()}
+                      </span>
                   )}
                 </div>
 
