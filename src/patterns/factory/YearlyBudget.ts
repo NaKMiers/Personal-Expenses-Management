@@ -1,5 +1,5 @@
-import { Budget } from './Budget';
 import mongoose from 'mongoose';
+import { Budget } from './Budget';
 
 export class YearlyBudget extends Budget {
   constructor(
@@ -8,23 +8,18 @@ export class YearlyBudget extends Budget {
     userId: string,
     amount: number,
     startDate: Date,
-    endDate: Date
+    endDate: Date,
+    status: string = 'active'
   ) {
-    super(name, categoryId, userId, amount, 'yearly', startDate, endDate);
+    super(name, categoryId, userId, amount, startDate, endDate, 'yearly', status);
   }
 
   async calculateRemaining(): Promise<number> {
     const totalExpenses = await mongoose.models.Transaction.aggregate([
-      {
-        $match: {
-          budgetId: this._id,
-          categoryId: this.categoryId
-        }
-      },
+      { $match: { budgetId: this._id, categoryId: this.categoryId } },
       { $group: { _id: null, total: { $sum: '$amount' } } }
     ]);
 
-    const totalSpent = totalExpenses.length > 0 ? totalExpenses[0].total : 0;
-    return this.amount - totalSpent;
+    return this.amount - (totalExpenses[0]?.total || 0);
   }
 }

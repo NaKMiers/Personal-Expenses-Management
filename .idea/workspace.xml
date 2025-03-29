@@ -5,10 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="67cbeb81-d73b-4d98-b591-7047c7aab201" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/api/budgets/spent/route.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/BudgetCard.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/patterns/factory/MonthlyBudgetCreator.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/budgets/create/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/budgets/create/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/stats/overview/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/stats/overview/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api/transactions/create/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/transactions/create/route.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/CreateBudgetForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CreateBudgetForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Overview.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Overview.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/models/BudgetModel.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/BudgetModel.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/patterns/factory/Budget.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/patterns/factory/Budget.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/patterns/factory/BudgetFactory.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/patterns/factory/BudgetCreator.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/patterns/factory/MonthlyBudget.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/patterns/factory/MonthlyBudget.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/patterns/factory/ProjectBudget.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/patterns/factory/ProjectBudget.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/patterns/factory/YearlyBudget.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/patterns/factory/YearlyBudget.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/patterns/strategy/BudgetCalculationStrategy.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/patterns/strategy/BudgetCalculationStrategy.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,25 +58,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "#3 on budget",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/My Folder/React/MTK/Personal-Expenses-Management",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
-    "ts.external.directory.path": "D:\\My Folder\\React\\MTK\\Personal-Expenses-Management\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;#3 on budget&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/My Folder/React/MTK/Personal-Expenses-Management&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;D:\\My Folder\\React\\MTK\\Personal-Expenses-Management\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\My Folder\React\MTK\Personal-Expenses-Management" />
@@ -100,6 +112,8 @@
       <workItem from="1742392743333" duration="999000" />
       <workItem from="1742545626204" duration="142000" />
       <workItem from="1742545837568" duration="10000" />
+      <workItem from="1743230337969" duration="9512000" />
+      <workItem from="1743244951513" duration="17492000" />
     </task>
     <servers />
   </component>

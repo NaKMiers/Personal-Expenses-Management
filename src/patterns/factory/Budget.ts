@@ -8,9 +8,9 @@ export abstract class Budget {
     public categoryId: mongoose.Types.ObjectId,
     public userId: string,
     public amount: number,
-    public type: string,
     public startDate: Date,
     public endDate: Date,
+    public type: string,
     public status: string = 'active'
   ) {}
 

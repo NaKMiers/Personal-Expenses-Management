@@ -1,5 +1,5 @@
-import { Budget } from './Budget';
 import mongoose from 'mongoose';
+import { Budget } from './Budget';
 
 export class ProjectBudget extends Budget {
   constructor(
@@ -8,24 +8,19 @@ export class ProjectBudget extends Budget {
     userId: string,
     amount: number,
     startDate: Date,
-    endDate: Date
+    endDate: Date,
+    status: string = 'active'
   ) {
-    super(name, categoryId, userId, amount, 'project', startDate, endDate);
+    super(name, categoryId, userId, amount, startDate, endDate, 'project', status);
   }
 
   async calculateRemaining(): Promise<number> {
     const totalExpenses = await mongoose.models.Transaction.aggregate([
-      {
-        $match: {
-          budgetId: this._id, // Lọc theo budgetId
-          categoryId: this.categoryId // Lọc theo categoryId
-        }
-      },
+      { $match: { budgetId: this._id, categoryId: this.categoryId } },
       { $group: { _id: null, total: { $sum: '$amount' } } }
     ]);
 
-    const totalSpent = totalExpenses.length > 0 ? totalExpenses[0].total : 0;
-    return this.amount - totalSpent;
+    return this.amount - (totalExpenses[0]?.total || 0);
   }
 
   isActive(): boolean {

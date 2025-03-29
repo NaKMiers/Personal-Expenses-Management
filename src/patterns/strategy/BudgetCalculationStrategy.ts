@@ -12,15 +12,22 @@ class YearlyBudgetCalculation implements IBudgetCalculation {
   }
 }
 
-const budget = { amount: 1000000, type: 'monthly' };
-const transactions = [{ amount: 200000 }, { amount: 300000 }];
-
-let strategy: IBudgetCalculation;
-if (budget.type === 'monthly') {
-  strategy = new MonthlyBudgetCalculation();
-} else {
-  strategy = new YearlyBudgetCalculation();
+class ProjectBudgetCalculation implements IBudgetCalculation {
+  calculateRemaining(budget: any, transactions: any[]): number {
+    const totalSpent = transactions.reduce((sum, transaction) => sum + transaction.amount, 0);
+    return budget.amount - totalSpent;
+  }
 }
 
-const remainingAmount = strategy.calculateRemaining(budget, transactions);
-console.log(`Số tiền còn lại: ${remainingAmount}`);
+function getBudgetCalculationStrategy(type: string): IBudgetCalculation {
+  switch (type) {
+    case 'monthly':
+      return new MonthlyBudgetCalculation();
+    case 'yearly':
+      return new YearlyBudgetCalculation();
+    case 'project':
+      return new ProjectBudgetCalculation();
+    default:
+      throw new Error('Loại ngân sách không hợp lệ!');
+  }
+}

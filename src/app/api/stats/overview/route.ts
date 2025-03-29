@@ -17,6 +17,7 @@ export type OverviewType = {
   income: number
   expense: number
   investment: number
+  budget: number
   balance: number
 }
 
@@ -67,12 +68,18 @@ export async function GET(req: NextRequest) {
       (total, trans) => (trans.type === 'investment' ? total + trans.amount : total),
       0
     )
+    const budget = transactions.reduce(
+      (total, trans) => (trans.type === 'budget' ? total + trans.amount : total),
+      0
+    )
+
     const balance = income - expense - investment
 
     const overview: OverviewType = {
       income,
       expense,
       investment,
+      budget,
       balance,
     }
 
@@ -82,6 +89,7 @@ export async function GET(req: NextRequest) {
       income: [],
       expense: [],
       investment: [],
+      budget: [],
     }
 
     transactions.forEach((transaction: any) => {

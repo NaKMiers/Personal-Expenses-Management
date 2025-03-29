@@ -12,7 +12,7 @@ import { RiDonutChartFill } from 'react-icons/ri'
 import { Calendar } from './ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import mongoose from 'mongoose'
-import { BudgetFactory } from '@/patterns/factory/BudgetFactory'
+import { BudgetCreator } from '@/patterns/factory/BudgetCreator'
 import CategoryPicker from '@/components/CategoryPicker'
 
 interface ICategory {
@@ -60,40 +60,47 @@ function CreateBudgetForm({
     async (data: FieldValues) => {
       // Validate data
       if (!data.name || !data.amount || !data.startDate || !data.endDate || !data.categoryId) {
-        toast.error('Please fill all required fields')
-        return
+        toast.error('Please fill all required fields');
+        return;
       }
 
-      // Start loading
-      setSaving(true)
+      setSaving(true);
 
       try {
-        // Create budget using BudgetFactory
-        const budget = BudgetFactory.createBudget(
-          data.type, // Type from form
-          data.name,
-          new mongoose.Types.ObjectId(data.categoryId),
-          userSettings.userId,
-          parseFloat(data.amount),
-          new Date(data.startDate),
-          new Date(data.endDate),
-        )
+        const response = await fetch('/api/budgets/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: data.name,
+            categoryId: data.categoryId,
+            amount: data.amount,
+            type: data.type,
+            startDate: data.startDate,
+            endDate: data.endDate
+          }),
+        });
 
-        // Log success
-        toast.success('Budget created successfully')
-        setOpen(false)
-        reset()
-        refresh?.() // Refresh data if needed
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message || 'Failed to create budget');
+        }
+
+        toast.success('Budget created successfully');
+        setOpen(false);
+        reset();
+        refresh?.();
       } catch (err: any) {
-        toast.error(err.message)
-        console.error(err)
+        toast.error(err.message);
+        console.error(err);
       } finally {
-        // Stop loading
-        setSaving(false)
+        setSaving(false);
       }
     },
-    [reset, refresh, userSettings]
-  )
+    [reset, refresh]
+  );
 
   return (
     <div className={`relative ${className}`}>
@@ -170,19 +177,9 @@ function CreateBudgetForm({
                 </div>
 
                 {/* MARK: Category */}
-                <div className="mt-3 flex flex-1 flex-col">
-                  <p className="mb-2 font-semibold">Category</p>
-                  <div onFocus={() => clearErrors('category')}>
-                    <CategoryPicker
-                      onChange={(category: string) => setValue('category', category)}
-                      type={"expense"}
-                    />
-                  </div>
-                  {errors.category?.message && (
-                    <span className="ml-1 mt-0.5 text-xs italic text-rose-400">
-                        {errors.category?.message?.toString()}
-                      </span>
-                  )}
+                <div className="mt-3 flex flex-col">
+                  <label className="font-semibold">Category <span className="text-red-400">*</span></label>
+                  <CategoryPicker onChange={(category: string) => setValue('categoryId', category)} type={'expense'} />
                 </div>
 
                 {/* MARK: Type */}
