@@ -50,8 +50,8 @@ function StatCards({ loading, overview = null, className = '' }: StatCardsProps)
       {overview && !loading ? (
         <Card
           icon={
-            <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-rose-500 bg-rose-950">
-              <LuTrendingDown size={24} />
+            <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-yellow-500 bg-yellow-950">
+              <LuTrendingUp size={24} />
             </div>
           }
           title="Investment"

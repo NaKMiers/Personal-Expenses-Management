@@ -16,9 +16,9 @@ import { BudgetCreator } from '@/patterns/factory/BudgetCreator'
 import CategoryPicker from '@/components/CategoryPicker'
 
 interface ICategory {
-  _id: string; // Hoặc mongoose.Types.ObjectId
-  name: string;
-  type: string; // 'income', 'expense', 'investment'
+  _id: string // Hoặc mongoose.Types.ObjectId
+  name: string
+  type: string // 'income', 'expense', 'investment'
 }
 
 interface CreateBudgetFormProps {
@@ -27,11 +27,7 @@ interface CreateBudgetFormProps {
   className?: string
 }
 
-function CreateBudgetForm({
-                            trigger,
-                            refresh,
-                            className = '',
-                          }: CreateBudgetFormProps) {
+function CreateBudgetForm({ trigger, refresh, className = '' }: CreateBudgetFormProps) {
   const {
     register,
     handleSubmit,
@@ -60,11 +56,11 @@ function CreateBudgetForm({
     async (data: FieldValues) => {
       // Validate data
       if (!data.name || !data.amount || !data.startDate || !data.endDate || !data.categoryId) {
-        toast.error('Please fill all required fields');
-        return;
+        toast.error('Please fill all required fields')
+        return
       }
 
-      setSaving(true);
+      setSaving(true)
 
       try {
         const response = await fetch('/api/budgets/create', {
@@ -78,29 +74,29 @@ function CreateBudgetForm({
             amount: data.amount,
             type: data.type,
             startDate: data.startDate,
-            endDate: data.endDate
+            endDate: data.endDate,
           }),
-        });
+        })
 
-        const result = await response.json();
+        const result = await response.json()
 
         if (!response.ok) {
-          throw new Error(result.message || 'Failed to create budget');
+          throw new Error(result.message || 'Failed to create budget')
         }
 
-        toast.success('Budget created successfully');
-        setOpen(false);
-        reset();
-        refresh?.();
+        toast.success('Budget created successfully')
+        setOpen(false)
+        reset()
+        refresh?.()
       } catch (err: any) {
-        toast.error(err.message);
-        console.error(err);
+        toast.error(err.message)
+        console.error(err)
       } finally {
-        setSaving(false);
+        setSaving(false)
       }
     },
     [reset, refresh]
-  );
+  )
 
   return (
     <div className={`relative ${className}`}>
@@ -121,9 +117,7 @@ function CreateBudgetForm({
               className="z-10 w-full max-w-[500px] rounded-lg border border-slate-200/30 bg-neutral-950 p-21"
             >
               <div className="flex items-start justify-between gap-21">
-                <p className="text-base font-semibold">
-                  Create a new Budget
-                </p>
+                <p className="text-base font-semibold">Create a new Budget</p>
 
                 <button
                   onClick={() => setOpen(!open)}
@@ -178,8 +172,13 @@ function CreateBudgetForm({
 
                 {/* MARK: Category */}
                 <div className="mt-3 flex flex-col">
-                  <label className="font-semibold">Category <span className="text-red-400">*</span></label>
-                  <CategoryPicker onChange={(category: string) => setValue('categoryId', category)} type={'expense'} />
+                  <label className="mb-2 font-semibold">
+                    Category <span className="text-red-400">*</span>
+                  </label>
+                  <CategoryPicker
+                    onChange={(category: string) => setValue('categoryId', category)}
+                    type={'expense'}
+                  />
                 </div>
 
                 {/* MARK: Type */}

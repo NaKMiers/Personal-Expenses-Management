@@ -48,6 +48,7 @@ function CreateCategoryDialog({
   const form = watch()
   const [open, setOpen] = useState<boolean>(false)
   const [saving, setSaving] = useState<boolean>(false)
+  const [emojiOpen, setEmojiOpen] = useState<boolean>(false)
 
   // create category
   const handleCreateCategory: SubmitHandler<FieldValues> = useCallback(
@@ -136,7 +137,10 @@ function CreateCategoryDialog({
                   Icon <span className="font-normal">(optional)</span>
                 </p>
 
-                <Popover>
+                <Popover
+                  open={emojiOpen}
+                  onOpenChange={setEmojiOpen}
+                >
                   <PopoverTrigger className="w-full">
                     <button className="mt-2 flex h-[100px] w-full flex-col items-center justify-center rounded-md bg-neutral-800">
                       {form.icon ? (
@@ -151,7 +155,10 @@ function CreateCategoryDialog({
                   <PopoverContent className="w-full translate-x-4 translate-y-1/2 p-0 outline-none">
                     <Picker
                       data={data}
-                      onEmojiSelect={(emoji: any) => setValue('icon', emoji.native)}
+                      onEmojiSelect={(emoji: any) => {
+                        setValue('icon', emoji.native)
+                        setEmojiOpen(false)
+                      }}
                     />
                   </PopoverContent>
                 </Popover>

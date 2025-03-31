@@ -16,7 +16,11 @@ import TransactionByCategories from './TransactionByCategories'
 import { DateRangePicker } from './ui/DateRangePicker'
 import { BudgetCard } from '@/components/BudgetCard'
 
-function Overview() {
+interface OverviewProps {
+  refetch?: number
+}
+
+function Overview({ refetch }: OverviewProps) {
   // states
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
     from: moment().startOf('month').toDate(),
@@ -38,12 +42,13 @@ function Overview() {
     try {
       const { overview, types, typeGroups } = await StatApis.getOverviewApi(
         toUTC(dateRange.from),
-        toUTC(dateRange.to)
+        toUTC(dateRange.to),
+        { noCache: true }
       )
-      const budgetsResponse = await fetch('/api/budgets');
-      const { budgets } = await budgetsResponse.json();
+      const budgetsResponse = await fetch('/api/budgets')
+      const { budgets } = await budgetsResponse.json()
 
-      console.log("Budgets data received:", budgets);
+      console.log('Budgets data received:', budgets)
 
       setOverview(overview)
       setTypes(types)
@@ -72,12 +77,11 @@ function Overview() {
 
       const budgetCategories = typeGroups?.budget
         ? typeGroups.budget.map((transaction: Transaction) => transaction.category)
-        : [];
+        : []
 
       const uniqueBudgetCategories: any[] = Array.from(
         new Map(budgetCategories.map((category: Category) => [category._id, category])).values()
-      );
-
+      )
 
       setCateGroups({
         income: uniqueIncomeCategories,
@@ -85,7 +89,6 @@ function Overview() {
         investment: uniqueInvestmentCategories,
         budget: uniqueBudgetCategories,
       })
-
     } catch (err: any) {
       console.log(err)
     } finally {
@@ -97,7 +100,7 @@ function Overview() {
   // initially get stats
   useEffect(() => {
     getOverview()
-  }, [getOverview])
+  }, [getOverview, refetch])
 
   return (
     <>
@@ -106,7 +109,7 @@ function Overview() {
         <h2 className="text-2xl font-bold">Overview</h2>
         <div className="flex gap-3">
           <button
-            className="group flex w-10 items-center justify-center rounded-full bg-neutral-700"
+            className="group flex aspect-square w-10 items-center justify-center rounded-full bg-neutral-700"
             onClick={getOverview}
           >
             <LuRotateCcw
@@ -154,34 +157,36 @@ function Overview() {
 
       {/* Budget list */}
       <div className="mt-6 px-6">
-        <h2 className="text-2xl font-bold mb-4">Danh sách Ngân Sách</h2>
+        <h2 className="mb-4 text-2xl font-bold">Budgets</h2>
 
         {loading ? (
           <div className="space-y-3">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="p-4 rounded-md border border-slate-200/30 bg-gray-800 animate-pulse h-36" />
+              <div
+                key={i}
+                className="h-36 animate-pulse rounded-md border border-slate-200/30 bg-gray-800 p-4"
+              />
             ))}
           </div>
         ) : budgets.length > 0 ? (
           <div className="grid gap-4">
-            {budgets.map((budget) => (
+            {budgets.map(budget => (
               <BudgetCard
                 key={budget._id}
                 budget={{
                   ...budget,
                   startDate: new Date(budget.startDate),
-                  endDate: new Date(budget.endDate)
+                  endDate: new Date(budget.endDate),
                 }}
               />
             ))}
           </div>
         ) : (
-          <div className="text-center py-8 border rounded-lg bg-gray-800">
-            <p className="text-gray-400">Chưa có ngân sách nào được tạo</p>
+          <div className="rounded-lg border bg-gray-800 py-8 text-center">
+            <p className="text-gray-400">No budgets found.</p>
           </div>
         )}
       </div>
-
 
       <div className="mt-21/2 px-21/2 md:mt-21 md:px-21">
         <div className="py-6">

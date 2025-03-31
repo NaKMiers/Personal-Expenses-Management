@@ -5,11 +5,13 @@ import CreateTransactionDialog from '@/components/CreateTransactionDialog'
 import Overview from '@/components/Overview'
 import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 function DashboardPage() {
   // hooks
   const { user } = useUser()
   const router = useRouter()
+  const [refetch, setRefresh] = useState<number>(new Date().getTime())
 
   return (
     <div>
@@ -25,7 +27,7 @@ function DashboardPage() {
                   New Income 🤑
                 </button>
               }
-              refresh={() => router.refresh()}
+              refresh={() => setRefresh(new Date().getTime())}
             />
 
             <CreateTransactionDialog
@@ -35,7 +37,7 @@ function DashboardPage() {
                   New Expense 😕
                 </button>
               }
-              refresh={() => router.refresh()}
+              refresh={() => setRefresh(new Date().getTime())}
             />
             <CreateTransactionDialog
               type="investment"
@@ -44,22 +46,22 @@ function DashboardPage() {
                   New Investment 📈
                 </button>
               }
-              refresh={() => router.refresh()}
+              refresh={() => setRefresh(new Date().getTime())}
             />
             <CreateBudgetForm
               trigger={
                 <button className="trans-200 h-8 rounded-md border-2 border-blue-500 bg-blue-950 px-2 text-xs font-semibold hover:bg-blue-700">
-                  New Budget
+                  New Budget 🎁
                 </button>
               }
-              refresh={() => router.refresh()}
+              refresh={() => setRefresh(new Date().getTime())}
             />
           </div>
         </div>
       </div>
 
       <div className="container">
-        <Overview />
+        <Overview refetch={refetch} />
       </div>
 
       <div className="pt-40" />

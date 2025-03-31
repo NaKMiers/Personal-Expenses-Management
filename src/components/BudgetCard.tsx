@@ -63,15 +63,15 @@ export function BudgetCard({ budget }: BudgetCardProps) {
 
       <div className="space-y-2">
         <div className="flex justify-between text-sm">
-          <span className="text-gray-400">Ngân sách:</span>
+          <span className="text-gray-400">Total:</span>
           <span>{budget.amount.toLocaleString()} VND</span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-gray-400">Đã sử dụng:</span>
+          <span className="text-gray-400">Spent:</span>
           <span>{spentAmount.toLocaleString()} VND</span>
         </div>
         <div className="flex justify-between text-sm font-medium">
-          <span className="text-gray-400">Còn lại:</span>
+          <span className="text-gray-400">Left:</span>
           <span className={remainingAmount >= 0 ? 'text-green-400' : 'text-red-400'}>
             {Math.abs(remainingAmount).toLocaleString()} VND
           </span>
