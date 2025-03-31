@@ -1,9 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server'
 import { connectDatabase } from '@/config/database'
-import { currentUser } from '@clerk/nextjs/server'
 import TransactionModel from '@/models/TransactionModel'
-import { InvestmentService } from '@/services/InvestmentService'
-import { InvestmentFactory } from '@/patterns/factory/InvestmentFactory'
+import { currentUser } from '@clerk/nextjs/server'
+import { NextRequest, NextResponse } from 'next/server'
+
+// Models: Category, Transaction, User Settings
+import '@/models/CategoryModel'
+import '@/models/TransactionModel'
+import '@/models/UserSettingsModel'
 
 export const dynamic = 'force-dynamic'
 
@@ -17,39 +20,43 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
 
-    const { searchParams } = new URL(req.url)
-    const filters: Record<string, any> = {}
+    const investments = await TransactionModel.find({ type: 'investment', userId: user.id }).populate(
+      'category'
+    )
 
-    // Parse filters from query parameters
-    if (searchParams.has('minAmount')) {
-      filters.minAmount = parseFloat(searchParams.get('minAmount') as string)
-    }
+    // const { searchParams } = new URL(req.url)
+    // const filters: Record<string, any> = {}
 
-    if (searchParams.has('maxAmount')) {
-      filters.maxAmount = parseFloat(searchParams.get('maxAmount') as string)
-    }
+    // // Parse filters from query parameters
+    // if (searchParams.has('minAmount')) {
+    //   filters.minAmount = parseFloat(searchParams.get('minAmount') as string)
+    // }
 
-    if (searchParams.has('category')) {
-      filters.category = searchParams.get('category')
-    }
+    // if (searchParams.has('maxAmount')) {
+    //   filters.maxAmount = parseFloat(searchParams.get('maxAmount') as string)
+    // }
 
-    if (searchParams.has('from') && searchParams.has('to')) {
-      filters.dateRange = {
-        from: new Date(searchParams.get('from') as string),
-        to: new Date(searchParams.get('to') as string),
-      }
-    }
+    // if (searchParams.has('category')) {
+    //   filters.category = searchParams.get('category')
+    // }
 
-    const withRiskAnalysis = searchParams.get('withRiskAnalysis') === 'true'
-    const withROICalculation = searchParams.get('withROICalculation') === 'true'
-    const withPerformanceTracking = searchParams.get('withPerformanceTracking') === 'true'
+    // if (searchParams.has('from') && searchParams.has('to')) {
+    //   filters.dateRange = {
+    //     from: new Date(searchParams.get('from') as string),
+    //     to: new Date(searchParams.get('to') as string),
+    //   }
+    // }
 
-    // Get investments with decorators based on query parameters
-    const investments = await InvestmentService.getDecoratedInvestments(filters, {
-      withRiskAnalysis,
-      withROICalculation,
-      withPerformanceTracking,
-    })
+    // const withRiskAnalysis = searchParams.get('withRiskAnalysis') === 'true'
+    // const withROICalculation = searchParams.get('withROICalculation') === 'true'
+    // const withPerformanceTracking = searchParams.get('withPerformanceTracking') === 'true'
+
+    // // Get investments with decorators based on query parameters
+    // const investments = await InvestmentService.getDecoratedInvestments(filters, {
+    //   withRiskAnalysis,
+    //   withROICalculation,
+    //   withPerformanceTracking,
+    // })
 
     return NextResponse.json({ investments }, { status: 200 })
   } catch (err: any) {

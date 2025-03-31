@@ -1,14 +1,9 @@
 'use client'
 
 import InvestmentManagement from '@/components/InvestmentManagement'
-import InvestmentSummary from '@/components/InvestmentSummary' // Thêm import
-import { DateRangePicker } from '@/components/ui/DateRangePicker'
-import { toUTC } from '@/lib/utils'
-import { differenceInDays } from 'date-fns'
-import moment from 'moment'
-import { useState, useEffect } from 'react'
+import InvestmentSummary from '@/components/InvestmentSummary'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { LuRotateCcw } from 'react-icons/lu'
 
 function InvestmentsPage() {
   const [refresh, setRefresh] = useState<number>(Date.now())
@@ -37,6 +32,8 @@ function InvestmentsPage() {
       }
       const data = await response.json()
       setInvestments(data.investments)
+
+      console.log('Dữ liệu investments', data)
     } catch (error) {
       toast.error('Error fetching investments')
       console.error(error)
@@ -49,7 +46,7 @@ function InvestmentsPage() {
   }, [refresh])
 
   return (
-    <div className="min-h-screen p-6 pt-24">
+    <div className="min-h-screen p-6 pt-8">
       <div className="container mx-auto">
         <div className="mb-6">
           <h1 className="text-3xl font-bold">Investments</h1>
@@ -63,7 +60,7 @@ function InvestmentsPage() {
         />
 
         <div className="mt-8">
-          <InvestmentSummary refresh={refresh} /> {/* Sử dụng InvestmentSummary */}
+          <InvestmentSummary refresh={refresh} />
         </div>
       </div>
     </div>

@@ -17,7 +17,6 @@ import {
   Legend,
 } from 'chart.js'
 
-// Đăng ký các thành phần của Chart.js
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
 interface InvestmentSummaryProps {
@@ -58,7 +57,6 @@ function InvestmentSummary({ className = '', refresh }: InvestmentSummaryProps) 
   }, [])
 
   const fetchPerformanceData = useCallback(async () => {
-    // Giả lập dữ liệu, thay bằng API thực tế như /api/investments/performance
     const mockData = [
       { date: '2025-01-01', value: 100000 },
       { date: '2025-02-01', value: 105000 },
@@ -78,7 +76,7 @@ function InvestmentSummary({ className = '', refresh }: InvestmentSummaryProps) 
       {
         label: 'Portfolio Value',
         data: performanceData.map(data => data.value),
-        borderColor: 'rgba(34, 197, 94, 1)', // Màu xanh
+        borderColor: 'rgba(34, 197, 94, 1)',
         backgroundColor: 'rgba(34, 197, 94, 0.2)',
         fill: true,
       },
