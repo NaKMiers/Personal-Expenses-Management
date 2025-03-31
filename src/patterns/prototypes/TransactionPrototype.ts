@@ -17,6 +17,8 @@ class Transaction implements IPrototype {
   public type: ITransactionType
   public category: string | Category
 
+  public metadata?: any
+
   constructor(
     _id: string,
     createdAt: string,

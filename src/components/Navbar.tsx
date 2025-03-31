@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import Logo from './Logo'
 import { UserButton, useUser } from '@clerk/nextjs'
 import { useState } from 'react'
-import { LuMenu, LuX } from 'react-icons/lu'
+import { LuMenu, LuX, LuTrendingUp } from 'react-icons/lu'
 import { AnimatePresence, motion } from 'framer-motion'
 
 function Navbar() {
@@ -29,6 +29,10 @@ const items = [
   {
     label: 'Manage',
     link: '/manage',
+  },
+  {
+    label: 'Investments',
+    link: '/investments',
   },
 ]
 
