@@ -34,6 +34,7 @@ export async function POST(req: NextRequest) {
       category,
     })
 
+
     // return response
     return NextResponse.json({ transaction, message: 'Category created' }, { status: 200 })
   } catch (err: any) {
