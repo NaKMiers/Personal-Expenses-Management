@@ -48,7 +48,15 @@ class CategoryApi {
   }
 }
 
-class CategoryApiProxy {
+interface ICategoryService {
+  getUserCategoriesApi: (type?: TransactionType, option?: { noCache: boolean }) => Promise<any>
+  createCategoryApi: (data: any) => Promise<any>
+  editCategoryApi: (id: string, data: any) => Promise<any>
+  deleteCategoryApi: (id: string) => Promise<any>
+  clearCache: () => void
+}
+
+class CategoryApiProxy implements ICategoryService {
   private realApi: CategoryApi
   private cache: Map<string, any>
 

@@ -41,7 +41,19 @@ class TransactionApi {
   }
 }
 
-class TransactionApiProxy {
+interface TransactionApiService {
+  getUserTransactionsApi: (
+    from: Date | string,
+    to: Date | string,
+    option?: { noCache: boolean }
+  ) => Promise<any>
+  createTransactionApi: (data: any) => Promise<any>
+  editTransactionApi: (id: string, data: any) => Promise<any>
+  deleteTransactionsApi: (ids: string[]) => Promise<any>
+  clearCache: () => void
+}
+
+class TransactionApiProxy implements TransactionApiService {
   private realApi: TransactionApi
   private cache: Map<string, any>
 

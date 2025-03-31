@@ -23,7 +23,13 @@ class UserSettingsApi {
   }
 }
 
-class UserSettingsApiProxy {
+interface UserSettingsApiService {
+  getUserSettingsApi: (userId: string, option?: { prefix: string; noCache?: boolean }) => Promise<any>
+  editUserSettingsApi: (currency: string) => Promise<any>
+  clearCache: () => void
+}
+
+class UserSettingsApiProxy implements UserSettingsApiService {
   private realApi: UserSettingsApi
   private cache: Map<string, any>
 

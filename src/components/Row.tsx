@@ -19,6 +19,7 @@ interface RowProps {
   selectedTransactions: string[]
   refresh?: () => void
 }
+
 function Row({
   data,
   columns,

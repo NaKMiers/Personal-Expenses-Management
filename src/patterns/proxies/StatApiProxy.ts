@@ -14,7 +14,12 @@ class StatApi {
   }
 }
 
-class StatApiProxy {
+interface StatApiService {
+  getOverviewApi: (from: Date | string, to: Date | string, option?: { noCache: boolean }) => Promise<any>
+  clearCache: () => void
+}
+
+class StatApiProxy implements StatApiService {
   private realApi: StatApi
   private cache: Map<string, any>
 

@@ -53,7 +53,7 @@ function DashboardPage() {
         <Overview />
       </div>
 
-      <div className="pt-80" />
+      <div className="pt-40" />
     </div>
   )
 }

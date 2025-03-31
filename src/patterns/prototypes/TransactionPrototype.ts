@@ -3,8 +3,9 @@ import { ITransactionType } from '@/models/TransactionModel'
 import toast from 'react-hot-toast'
 import { TransactionApis } from '../proxies/TransactionApiProxy'
 import Category from './CategoryPrototype'
+import { IPrototype } from './IPrototype'
 
-class Transaction {
+class Transaction implements IPrototype {
   public _id: string
   public createdAt: string
   public updatedAt: string
