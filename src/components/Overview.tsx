@@ -170,9 +170,9 @@ function Overview({ refetch }: OverviewProps) {
           </div>
         ) : budgets.length > 0 ? (
           <div className="grid gap-4">
-            {budgets.map(budget => (
+            {budgets.map((budget, index) => (
               <BudgetCard
-                key={budget._id}
+                key={index}
                 budget={{
                   ...budget,
                   startDate: new Date(budget.startDate),
